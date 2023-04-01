@@ -22,3 +22,10 @@ docs/
 
 # Code coverage
 *.lst
+
+# c# directories
+*/obj/
+*/bin/
+
+# vim stuff
+*.swp

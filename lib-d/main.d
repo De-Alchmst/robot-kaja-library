@@ -1,0 +1,36 @@
+import std.string;
+import structs;
+
+//////////////////////
+// Set up Variables //
+//////////////////////
+
+
+extern(C) export {
+///////////////////////////////
+// Functions for interaction //
+///////////////////////////////
+
+	// End program //
+
+	// Load programs //
+
+///////////////////////////////////////
+// Functions for getting impormation //
+///////////////////////////////////////
+
+	// Do one action //
+
+	// Get error message //
+
+	// Get Kája //
+
+	// Get home //
+
+	// Get flags //
+
+	// Get solid walls //
+
+	// Get breakable walls //
+
+}
