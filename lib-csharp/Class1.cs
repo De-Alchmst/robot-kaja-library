@@ -13,15 +13,15 @@ public class Class1
 // Functions for interaction //
 ///////////////////////////////
 
-	// End program //
+	// Innit / Restart //
 
 	// Load programs //
+
+	// Do one action //
 
 ///////////////////////////////////////
 // Functions for getting impormation //
 ///////////////////////////////////////
-
-	// Do one action //
 
 	// Get error message //
 
