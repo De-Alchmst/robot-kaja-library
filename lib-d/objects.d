@@ -4,7 +4,7 @@ public import support;
 // Kájovo class // and holds error massages
 //////////////////
 
-class Robotkaja {
+class RobotKaja {
 	// variables declared at start //
 	ushort[] pos; // x,y
 	byte direction;
@@ -15,6 +15,9 @@ class Robotkaja {
 
 	// variables declared automatically when needed
 	string errorMessage;
+
+	// other
+	ushort[] returnInfo() => pos~direction;
 
 	// moves foward //
 	public bool moveFoward(ushort[][] walls){
@@ -32,7 +35,7 @@ class Robotkaja {
 					// go back
 					pos[1]++;
 					// generate error message
-					errorMessage = getErrorMessage("walk into wall", direction);
+					errorMessage = generateErrorMessage("walk into wall", direction);
 					// return error status
 					return false;
 				}
@@ -48,7 +51,7 @@ class Robotkaja {
 					// go back
 					pos[0]--;
 					// generate error message
-					errorMessage = getErrorMessage("walk into wall", direction);
+					errorMessage = generateErrorMessage("walk into wall", direction);
 					// return error status
 					return false;
 				}
@@ -64,7 +67,7 @@ class Robotkaja {
 					// go back
 					pos[1]--;
 					// generate error message
-					errorMessage = getErrorMessage("walk into wall", direction);
+					errorMessage = generateErrorMessage("walk into wall", direction);
 					// return error status
 					return false;
 				}
@@ -80,7 +83,7 @@ class Robotkaja {
 					// go back
 					pos[0]++;
 					// generate error message
-					errorMessage = getErrorMessage("walk into wall", direction);
+					errorMessage = generateErrorMessage("walk into wall", direction);
 					// return error status
 					return false;
 				}
@@ -94,7 +97,7 @@ class Robotkaja {
 	// Turn Kája left and only left.//
 	// Not right. Not Up. Not even into ashes. //
 	// Only LEFT //
-	public bool turnLeft(){
+	public void turnLeft(){
 		direction--;
 		if (direction == 0)
 			direction = 4;

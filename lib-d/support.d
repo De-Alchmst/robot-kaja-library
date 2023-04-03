@@ -1,4 +1,4 @@
-import std.algorithm.iteration : splitter;
+import std.regex : split, regex;
 public import std.string : toStringz, fromStringz, strip, StringException, isNumeric;
 
 ////////////////////////////////////////////////////////////////////
@@ -10,18 +10,18 @@ int checkCollision(ushort[] positionToLookFor, ushort[][] stuffToLookIn){
 		if (stuffToLookIn[i][0] == positionToLookFor[0] && stuffToLookIn[i][1] == positionToLookFor[0])
 			return i;
 
-	return -1i;
+	return -1;
 }
 
 ////////////////////////////////////////////
 // splits city into lines for map loading //
 ////////////////////////////////////////////
-string[][] splitCity(string city){
+extern(C) string[][] splitCity(string city){
 	// get LF line ends
 	// using strip to get rid of extra whitespace
 
 	// get chunks separated by \r\n
-	string[] chunks = strip(city).splitter("\r\n");
+	string[] chunks = strip(city).split(regex("\r\n"));
 	string LFstring = strip(chunks[0]);
 
 	// put them back together but with \n only
@@ -30,10 +30,10 @@ string[][] splitCity(string city){
 
 	// return split by \n and , char
 	string[][] rows = [];
-	chunks = LFstring.splitter("\n");
+	chunks = LFstring.split(regex("\n"));
 
 	for (ushort i = 0; i < chunks.length; i++)
-		rows ~= chunks[i].splitter(",");
+		rows ~= chunks[i].split(regex(","));
 
 	return rows;
 }
@@ -41,7 +41,7 @@ string[][] splitCity(string city){
 ///////////////////////////////////////////////////
 // generates some error message based on context // and direction of Kája for some extra diversity
 ///////////////////////////////////////////////////
-string getErrorMessage(string cause, byte directionOfKaja){
+string generateErrorMessage(string cause, byte directionOfKaja){
 	switch(cause){
 		// collision with walls
 		case "walk into wall":

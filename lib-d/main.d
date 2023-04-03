@@ -1,15 +1,20 @@
-// build with : dmd
+// build with : dmd -c support.d -fPIC
+//              dmd -c objects.d -fPIC
+//              dmd -c main.d -fPIC
+//              dmd -shared main.o objects.o support.o -ofkajaLibD.so
 
 import std.string;
 import objects;
 
 import std.conv : to;
 
+import std.stdio;
+
 //////////////////////
 // Set up Variables //
 //////////////////////
 
-static Robotkaja kaja;
+static RobotKaja kaja;
 static InformationHolder infoHolder;
 
 
@@ -19,14 +24,15 @@ extern(C) export {
 ///////////////////////////////
 
 	// Innit / Restart //
-	void InnitPtr(char* city) { Innit( to!string(fromStringz(city)) ); }
-	void Innit(string city){
+	void innitPtr(char* city) { innit( to!string(fromStringz(city)) ); }
+	void innit(string city){
 		// preset some variables
 		infoHolder.solidWalls = [];
 		infoHolder.breakableWalls = [];
 		infoHolder.flags = [];
 		infoHolder.home = [];
 
+		kaja = new RobotKaja;
 		kaja.pos = [];
 		kaja.direction = 0;
 
@@ -66,7 +72,7 @@ extern(C) export {
 					// kája
 					case "K1","K2","K3","K4":
 						kaja.pos = [x,y];
-						kaja.direction = to!byte(citySplitted[y][x][1]);
+						kaja.direction = to!byte(citySplitted[y][x][1..2]);
 						break;
 					// flag
 					default:
@@ -91,15 +97,41 @@ extern(C) export {
 ///////////////////////////////////////
 
 	// Get error message //
+	char* getErrorMessagePtr(){
+		return cast(char*)toStringz(getErrorMessage());
+	}
+	string getErrorMessage(){
+		return kaja.errorMessage;
+	}
+
+	// get map dimensions //
+	ushort[] getMapDimensions(){
+		return kaja.wallPosition;
+	}
 
 	// Get Kája //
+	ushort[] getKaja(){
+		return kaja.returnInfo;
+	}
 
 	// Get home //
+	ushort[] getHome(){
+		return infoHolder.home;
+	}
 
 	// Get flags //
+	ushort[][] getFlags(){
+		return infoHolder.flags;
+	}
 
 	// Get solid walls //
+	ushort[][] getSolidWalls(){
+		return infoHolder.solidWalls;
+	}
 
 	// Get breakable walls //
+	ushort[][] getBreakableWalls(){
+		return infoHolder.breakableWalls;
+	}
 
 }
