@@ -24,8 +24,8 @@ extern(C) export {
 ///////////////////////////////
 
 	// Innit / Restart //
-	void innitPtr(char* city) { innit( to!string(fromStringz(city)) ); }
-	void innit(string city){
+	bool innitPtr(char* city) { return innit( to!string(fromStringz(city)) ); }
+	bool innit(string city){
 		// preset some variables
 		infoHolder.solidWalls = [];
 		infoHolder.breakableWalls = [];
@@ -45,10 +45,12 @@ extern(C) export {
 
 		// fill stuff with data
 		for (ushort y = 0; y < citySplitted.length; y++){
-			// throw exception if not all rows are same
-			if (citySplitted[y].length != cityWidth)
-				throw new StringException(
-						"Mapa nemá konzistentní šířku. Prosím, zkonzultujte tento problém s vaším architektem.");
+			// set error if not all rows are same
+			if (citySplitted[y].length != cityWidth){
+				kaja.errorMessage =
+					"Mapa nemá konzistentní šířku. Prosím, zkonzultujte tento problém s vaším architektem.";
+				return false;
+			}
 
 			for (ushort x = 0; x < cityWidth; x++)
 				// determine what does said char mean
@@ -77,15 +79,17 @@ extern(C) export {
 					// flag
 					default:
 						// if not number, then it is invalit tile
-						if (!isNumeric(citySplitted[y][x]))
-							throw new StringException("Blok mapy "~citySplitted[y][x]~" na pozici X : "~to!string(x)~", Y : "
-									~to!string(y)~" není validní. Prosím, zkonzultujte tento problém s vaším architektem.");
+						if (!isNumeric(citySplitted[y][x])){
+							kaja.errorMessage = "Blok mapy "~citySplitted[y][x]~" na pozici X : "~to!string(x)~", Y : "
+									~to!string(y)~" není validní. Prosím, zkonzultujte tento problém s vaším architektem.";
+							return false;
+						}
 
 						// else it is a flag
 						infoHolder.flags ~= [x,y,to!ushort(citySplitted[y][x])];
 				}
 		}
-
+		return true;
 	}
 
 	// Load programs //

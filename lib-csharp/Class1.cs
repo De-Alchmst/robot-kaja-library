@@ -7,7 +7,7 @@ namespace Kaja;
 // Load extern functions //
 ///////////////////////////
 [DllImport("../lib-d/kajaLibD.so")]
-static extern void innitPtr(IntPtr city);
+static extern bool innitPtr(IntPtr city);
 [DllImport("../lib-d/kajaLibD.so")]
 static extern IntPtr getErrorMessagePtr();
 [DllImport("../lib-d/kajaLibD.so")]
@@ -33,8 +33,8 @@ public class Class1
 ///////////////////////////////
 
 	// Innit / Restart //
-	static public void Innit(string city){
-		InnitPtr(Marshal.StringToHGlobalAnsi(city)); // convert string to char*
+	static public bool Innit(string city){
+		return InnitPtr(Marshal.StringToHGlobalAnsi(city)); // convert string to char*
 	}
 
 	// Load programs //
