@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Runtime.InteropServicec;
+using System.Runtime.InteropServices;
 
 namespace Kaja;
 
+public class RobotKaja
+{
 ///////////////////////////
 // Load extern functions //
 ///////////////////////////
@@ -11,7 +13,7 @@ static extern bool innitPtr(IntPtr city);
 [DllImport("../lib-d/kajaLibD.so")]
 static extern IntPtr getErrorMessagePtr();
 [DllImport("../lib-d/kajaLibD.so")]
-static extern ushort[] getMapDimensions();
+static extern IntPtr getMapDimensionsInt();
 [DllImport("../lib-d/kajaLibD.so")]
 static extern ushort[] getKaja();
 [DllImport("../lib-d/kajaLibD.so")]
@@ -23,18 +25,13 @@ static extern ushort[][] getSolidWalls();
 [DllImport("../lib-d/kajaLibD.so")]
 static extern ushort[][] getBreakableWalls();
 
-//////////////////////
-// Cover them in C# //
-//////////////////////
-public class Class1
-{
 ///////////////////////////////
 // Functions for interaction //
 ///////////////////////////////
 
 	// Innit / Restart //
 	static public bool Innit(string city){
-		return InnitPtr(Marshal.StringToHGlobalAnsi(city)); // convert string to char*
+		return innitPtr(Marshal.StringToHGlobalAnsi(city)); // convert string to char*
 	}
 
 	// Load programs //
@@ -51,8 +48,12 @@ public class Class1
 	}
 
 	// get map dimensions
-	static public ushort[] GetMapDimensions(){
-		return getMapDimensions();
+	static public int[] GetMapDimensions(){
+		int[] Output = new int[2];
+		IntPtr ToConvert = getMapDimensionsInt();
+
+		Marshal.Copy(ToConvert,	Output,0,2);
+		return Output;
 	}
 
 	// Get Kája //

@@ -15,6 +15,8 @@ extern(C) ushort[][] getFlags();
 extern(C) ushort[][] getSolidWalls();
 extern(C) ushort[][] getBreakableWalls();
 
+extern(C) int* getMapDimensionsInt();
+
 ////////////////////////
 // Set some variables //
 ////////////////////////
@@ -40,6 +42,8 @@ void main(){
 	mapDimensions = getMapDimensions();
 
 	// test functions
+	int[] x = getMapDimensionsInt()[0..2].dup;
+	writeln(x, to!(int[])(mapDimensions), mapDimensions);
 	getErrorMessage();
 	getMapDimensions();
   getKaja();
@@ -47,6 +51,7 @@ void main(){
 	getFlags();
 	getSolidWalls();
 	getBreakableWalls();
+	writeln("functions loaded succesfully");
 
 	// write current state
 	showMap();

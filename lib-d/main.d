@@ -17,6 +17,7 @@ import std.stdio;
 static RobotKaja kaja;
 static InformationHolder infoHolder;
 
+static int* result;
 
 extern(C) export {
 ///////////////////////////////
@@ -109,6 +110,14 @@ extern(C) export {
 	}
 
 	// get map dimensions //
+	int* getMapDimensionsInt(){
+		// get ushort[]
+		// transform into int[] because weird c# stuff with ushorts
+		// cast to pointer because weird c++ stuff
+		// return
+		result = cast(int*)to!(int[])(getMapDimensions());
+		return result;
+	}
 	ushort[] getMapDimensions(){
 		return kaja.wallPosition;
 	}
