@@ -13,17 +13,23 @@ static extern bool innitPtr(IntPtr city);
 [DllImport("../lib-d/kajaLibD.so")]
 static extern IntPtr getErrorMessagePtr();
 [DllImport("../lib-d/kajaLibD.so")]
-static extern IntPtr getMapDimensionsInt();
+static extern IntPtr getMapDimensionsIntPtr();
 [DllImport("../lib-d/kajaLibD.so")]
-static extern ushort[] getKaja();
+static extern IntPtr getKajaIntPtr();
 [DllImport("../lib-d/kajaLibD.so")]
-static extern ushort[] getHome();
+static extern IntPtr getHomeIntPtr();
 [DllImport("../lib-d/kajaLibD.so")]
-static extern ushort[][] getFlags();
+static extern void getFlagsLength(out int lengthOfArray);
 [DllImport("../lib-d/kajaLibD.so")]
-static extern ushort[][] getSolidWalls();
+static extern IntPtr getNextFlagIntPtr();
 [DllImport("../lib-d/kajaLibD.so")]
-static extern ushort[][] getBreakableWalls();
+static extern void getSolidWallsLength(out int lengthOfArray);
+[DllImport("../lib-d/kajaLibD.so")]
+static extern IntPtr getNextSolidWallIntPtr();
+[DllImport("../lib-d/kajaLibD.so")]
+static extern void getBreakableWallsLength(out int lengthOfArray);
+[DllImport("../lib-d/kajaLibD.so")]
+static extern IntPtr getNextBreakableWallIntPtr();
 
 ///////////////////////////////
 // Functions for interaction //
@@ -50,35 +56,85 @@ static extern ushort[][] getBreakableWalls();
 	// get map dimensions
 	static public int[] GetMapDimensions(){
 		int[] Output = new int[2];
-		IntPtr ToConvert = getMapDimensionsInt();
+		IntPtr ToConvert = getMapDimensionsIntPtr();
 
 		Marshal.Copy(ToConvert,	Output,0,2);
 		return Output;
 	}
 
 	// Get Kája //
-	static public ushort[] GetKaja(){
-		return getKaja();
+	static public int[] GetKaja(){
+		int[] Output = new int[3];
+		IntPtr ToConvert = getKajaIntPtr();
+
+		Marshal.Copy(ToConvert,	Output,0,3);
+		return Output;
 	}
 
 	// Get home //
-	static public ushort[] GetHome(){
-		return getHome();
+	static public int[] GetHome(){
+		int[] Output = new int[2];
+		IntPtr ToConvert = getHomeIntPtr();
+
+		Marshal.Copy(ToConvert,	Output,0,2);
+		return Output;
 	}
 
 	// Get flags //
-	static public ushort[][] GetFlags(){
-		return getFlags();
+	static public int[][] GetFlags(){
+		// get ptr and length
+		int LengthOfArray;
+		getFlagsLength(out LengthOfArray);
+
+		// output
+		int[][] Output = new int[LengthOfArray][];
+
+		// get all flags
+		for (int i = 0; i < LengthOfArray; i++){
+			int[] x = new int[3];
+			Marshal.Copy(getNextFlagIntPtr(),x,0,3);
+			Output[i] = x;
+		}
+
+		return Output;
 	}
 
 	// Get solid walls //
-	static public ushort[][] GetSolidWalls(){
-		return getSolidWalls();
+	static public int[][] GetSolidWalls(){
+		// get ptr and length
+		int LengthOfArray;
+		getSolidWallsLength(out LengthOfArray);
+
+		// output
+		int[][] Output = new int[LengthOfArray][];
+
+		// get all flags
+		for (int i = 0; i < LengthOfArray; i++){
+			int[] x = new int[3];
+			Marshal.Copy(getNextSolidWallIntPtr(),x,0,3);
+			Output[i] = x;
+		}
+
+		return Output;
 	}
 
 	// Get breakable walls //
-	static public ushort[][] GetBreakableWalls(){
-		return getBreakableWalls();
+	static public int[][] GetBreakableWalls(){
+		// get ptr and length
+		int LengthOfArray;
+		getBreakableWallsLength(out LengthOfArray);
+
+		// output
+		int[][] Output = new int[LengthOfArray][];
+
+		// get all flags
+		for (int i = 0; i < LengthOfArray; i++){
+			int[] x = new int[3];
+			Marshal.Copy(getNextBreakableWallIntPtr(),x,0,3);
+			Output[i] = x;
+		}
+
+		return Output;
 	}
 
 }

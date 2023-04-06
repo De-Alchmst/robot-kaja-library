@@ -17,7 +17,15 @@ import std.stdio;
 static RobotKaja kaja;
 static InformationHolder infoHolder;
 
-static int* result;
+// for getting stuff to c#
+static int[][] storedFlags;
+static ushort flagIndex;
+
+static int[][] storedSolidWalls;
+static ushort solidWallIndex;
+
+static int[][] storedBreakableWalls;
+static ushort breakableWallIndex;
 
 extern(C) export {
 ///////////////////////////////
@@ -110,39 +118,76 @@ extern(C) export {
 	}
 
 	// get map dimensions //
-	int* getMapDimensionsInt(){
+	int* getMapDimensionsIntPtr(){
 		// get ushort[]
 		// transform into int[] because weird c# stuff with ushorts
 		// cast to pointer because weird c++ stuff
 		// return
-		result = cast(int*)to!(int[])(getMapDimensions());
-		return result;
+		return cast(int*)to!(int[])(getMapDimensions());
 	}
 	ushort[] getMapDimensions(){
 		return kaja.wallPosition;
 	}
 
 	// Get Kája //
+	int* getKajaIntPtr(){
+		return cast(int*)to!(int[])(getKaja());
+	}
 	ushort[] getKaja(){
 		return kaja.returnInfo;
 	}
 
 	// Get home //
+	int* getHomeIntPtr(){
+		return cast(int*)to!(int[])(getHome());
+	}
 	ushort[] getHome(){
 		return infoHolder.home;
 	}
 
 	// Get flags //
+	// innicialize new set of flags for c#
+	void getFlagsLength(int* lengthOfArray){
+		storedFlags = to!(int[][])(getFlags());
+		flagIndex = 0;
+		*lengthOfArray = cast(int)storedFlags.length;
+	}
+	// get flag for c#
+	int* getNextFlagIntPtr(){
+		flagIndex++;
+		return cast(int*)(storedFlags[flagIndex-1]);
+	}
+
 	ushort[][] getFlags(){
 		return infoHolder.flags;
 	}
 
 	// Get solid walls //
+	void getSolidWallsLength(int* lengthOfArray){
+		storedSolidWalls = to!(int[][])(getSolidWalls());
+		solidWallIndex = 0;
+		*lengthOfArray = cast(int)storedSolidWalls.length;
+	}
+	int* getNextSolidWallIntPtr(){
+		solidWallIndex++;
+		return cast(int*)(storedSolidWalls[solidWallIndex-1]);
+	}
+
 	ushort[][] getSolidWalls(){
 		return infoHolder.solidWalls;
 	}
 
 	// Get breakable walls //
+	void getBreakableWallsLength(int* lengthOfArray){
+		storedBreakableWalls = to!(int[][])(getBreakableWalls());
+		breakableWallIndex = 0;
+		*lengthOfArray = cast(int)storedBreakableWalls.length;
+	}
+	int* getNextBreakableWallIntPtr(){
+		breakableWallIndex++;
+		return cast(int*)(storedBreakableWalls[breakableWallIndex-1]);
+	}
+
 	ushort[][] getBreakableWalls(){
 		return infoHolder.breakableWalls;
 	}

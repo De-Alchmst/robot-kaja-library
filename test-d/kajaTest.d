@@ -15,7 +15,7 @@ extern(C) ushort[][] getFlags();
 extern(C) ushort[][] getSolidWalls();
 extern(C) ushort[][] getBreakableWalls();
 
-extern(C) int* getMapDimensionsInt();
+extern(C) int* getMapDimensionsIntPtr();
 
 ////////////////////////
 // Set some variables //
@@ -42,7 +42,7 @@ void main(){
 	mapDimensions = getMapDimensions();
 
 	// test functions
-	int[] x = getMapDimensionsInt()[0..2].dup;
+	int[] x = getMapDimensionsIntPtr()[0..2].dup;
 	writeln(x, to!(int[])(mapDimensions), mapDimensions);
 	getErrorMessage();
 	getMapDimensions();
@@ -84,9 +84,9 @@ void showMap(){
 	}
 
 	// walls
-	foreach (ushort[] wall; getSolidWalls)
+	foreach (ushort[] wall; getSolidWalls())
 		toShow[wall[1]][wall[0]] = "\x1b[31m██\x1b[37m";
-	foreach (ushort[] wall; getBreakableWalls)
+	foreach (ushort[] wall; getBreakableWalls())
 		toShow[wall[1]][wall[0]] = "\x1b[33m▒▒\x1b[37m";
 
 	// home
@@ -96,7 +96,6 @@ void showMap(){
 
 	// kaja
 	ushort[] kaja = getKaja();
-	writeln(kaja[0]," ",kaja[1]," ",kaja[2]);
 	switch (kaja[2]){
 		case 1:
 			toShow[kaja[1]][kaja[0]] = "\x1b[36m/\\\x1b[37m";
