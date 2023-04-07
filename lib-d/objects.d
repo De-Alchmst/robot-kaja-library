@@ -118,3 +118,44 @@ struct InformationHolder{
 	// all walls combined
 	ushort[][] walls() => solidWalls ~ breakableWalls;
 }
+
+/////////////
+// Scripts //
+/////////////
+
+struct Script{
+	string[] commands;
+	uint currentCommandIndex = 0;
+}
+
+class Program{
+	RobotKaja kaja;
+	InformationHolder infoHolder;
+
+	// list of all avilable scripts
+	Script[string] scriptList;
+
+	// list of currently running scripts
+	Script[] runningScripts;
+
+	this(){
+		// set variables
+		infoHolder.solidWalls = [];
+		infoHolder.breakableWalls = [];
+		infoHolder.flags = [];
+		infoHolder.home = [];
+
+		kaja = new RobotKaja;
+		kaja.pos = [];
+		kaja.direction = 0;
+	}
+
+	// adding scripts from scriptList to runningScripts //
+	void addToRunningScripts(string scriptName){
+		// get new struct with copy of commands
+		Script addedScript = { commands : scriptList[scriptName].commands.dup };
+		// add it
+		runningScripts ~= addedScript;
+	}
+
+}

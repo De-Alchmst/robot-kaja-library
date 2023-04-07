@@ -1,0 +1,22 @@
+Mapa se zkládá z řádků oddělených \n. Každý z řádků obsahuje elementy odděleny ','. Všechny řádky musí být stejně dlouhé.
+
+elementy:
+	W - zeď
+	B - nekvalitní zeď
+	H - domov
+	K{1,2,3,4} - Kája s daným směrem
+	libovolné číslo - značky
+	mezera - nic
+
+příklad:
+
+W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W
+W,K2, , , ,W, , , , , , , , , ,W
+W, , , , ,W, ,5, , , , , , , ,W
+W, , , , ,W, , , , , , , , , ,W
+W, , , , ,B, , ,666, , , , , , ,W
+W, , , , ,W, , , , , , , , , ,W
+W, , , , ,W, , , , , , , , , ,W
+W, , , , ,W, , , , , ,H, , , ,W
+W, , , , ,W, , , , , , , , , ,W
+W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W

@@ -14,8 +14,7 @@ import std.stdio;
 // Set up Variables //
 //////////////////////
 
-static RobotKaja kaja;
-static InformationHolder infoHolder;
+static Program program;
 
 // for getting stuff to c#
 static int[][] storedFlags;
@@ -33,30 +32,24 @@ extern(C) export {
 ///////////////////////////////
 
 	// Innit / Restart //
-	bool innitPtr(char* city) { return innit( to!string(fromStringz(city)) ); }
-	bool innit(string city){
-		// preset some variables
-		infoHolder.solidWalls = [];
-		infoHolder.breakableWalls = [];
-		infoHolder.flags = [];
-		infoHolder.home = [];
-
-		kaja = new RobotKaja;
-		kaja.pos = [];
-		kaja.direction = 0;
+	bool innitPtr(char* city, char* mainScript)
+		{ return innit( to!string(fromStringz(city)), to!string(fromStringz(mainScript)) ); }
+	bool innit(string city, string mainScript){
+		// reset program
+		program = new Program;
 
 		// split map
 		string[][] citySplitted = splitCity(city);
 		ushort cityWidth = cast(ushort)citySplitted[0].length;
 
 		// set kája.wallPos
-		kaja.wallPosition = [cityWidth,cast(ushort)citySplitted.length];
+		program.kaja.wallPosition = [cityWidth,cast(ushort)citySplitted.length];
 
 		// fill stuff with data
 		for (ushort y = 0; y < citySplitted.length; y++){
 			// set error if not all rows are same
 			if (citySplitted[y].length != cityWidth){
-				kaja.errorMessage =
+				program.kaja.errorMessage =
 					"Mapa nemá konzistentní šířku. Prosím, zkonzultujte tento problém s vaším architektem.";
 				return false;
 			}
@@ -70,38 +63,66 @@ extern(C) export {
 						break;
 					// solid wall
 					case "W":
-						infoHolder.solidWalls ~= [x,y];
+						program.infoHolder.solidWalls ~= [x,y];
 						break;
 					// brea kable wall
 					case "B":
-						infoHolder.breakableWalls ~= [x,y];
+						program.infoHolder.breakableWalls ~= [x,y];
 						break;
 					// home
 					case "H":
-						infoHolder.home = [x,y];
+						program.infoHolder.home = [x,y];
 						break;
 					// kája
 					case "K1","K2","K3","K4":
-						kaja.pos = [x,y];
-						kaja.direction = to!byte(citySplitted[y][x][1..2]);
+						program.kaja.pos = [x,y];
+						program.kaja.direction = to!byte(citySplitted[y][x][1..2]);
 						break;
 					// flag
 					default:
 						// if not number, then it is invalit tile
 						if (!isNumeric(citySplitted[y][x])){
-							kaja.errorMessage = "Blok mapy "~citySplitted[y][x]~" na pozici X : "~to!string(x)~", Y : "
+							program.kaja.errorMessage = "Blok mapy "~citySplitted[y][x]~" na pozici X : "~to!string(x)~", Y : "
 									~to!string(y)~" není validní. Prosím, zkonzultujte tento problém s vaším architektem.";
 							return false;
 						}
 
 						// else it is a flag
-						infoHolder.flags ~= [x,y,to!ushort(citySplitted[y][x])];
+						program.infoHolder.flags ~= [x,y,to!ushort(citySplitted[y][x])];
 				}
 		}
+
+		// load main script
+		if (loadScript(mainScript)){
+			// add to running scripts
+			string[] splitedScript = splitScript(mainScript); // get all lines again
+
+			// add the script ro runningScripts
+			program.addToRunningScripts(splitedScript[0]);
+		}
+		// else return error
+		else return false;
+
 		return true;
 	}
 
 	// Load programs //
+	bool loadScript(string newScript){
+		string[] splitedScript = splitScript(newScript);
+
+		// test if for errors
+		if (splitedScript.length == 0){
+			program.kaja.errorMessage = "script is empty";
+			return false;
+		}
+		// here will be something to check if commands are valid
+		// at some point
+
+		// add to list 
+		Script x = {commands : splitedScript[1..$]};
+		program.scriptList[splitedScript[0]] = x;
+		return true;
+	}
 
 	// Do one action //
 
@@ -114,7 +135,7 @@ extern(C) export {
 		return cast(char*)toStringz(getErrorMessage());
 	}
 	string getErrorMessage(){
-		return kaja.errorMessage;
+		return program.kaja.errorMessage;
 	}
 
 	// get map dimensions //
@@ -126,7 +147,7 @@ extern(C) export {
 		return cast(int*)to!(int[])(getMapDimensions());
 	}
 	ushort[] getMapDimensions(){
-		return kaja.wallPosition;
+		return program.kaja.wallPosition;
 	}
 
 	// Get Kája //
@@ -134,7 +155,7 @@ extern(C) export {
 		return cast(int*)to!(int[])(getKaja());
 	}
 	ushort[] getKaja(){
-		return kaja.returnInfo;
+		return program.kaja.returnInfo;
 	}
 
 	// Get home //
@@ -142,7 +163,7 @@ extern(C) export {
 		return cast(int*)to!(int[])(getHome());
 	}
 	ushort[] getHome(){
-		return infoHolder.home;
+		return program.infoHolder.home;
 	}
 
 	// Get flags //
@@ -159,7 +180,7 @@ extern(C) export {
 	}
 
 	ushort[][] getFlags(){
-		return infoHolder.flags;
+		return program.infoHolder.flags;
 	}
 
 	// Get solid walls //
@@ -174,7 +195,7 @@ extern(C) export {
 	}
 
 	ushort[][] getSolidWalls(){
-		return infoHolder.solidWalls;
+		return program.infoHolder.solidWalls;
 	}
 
 	// Get breakable walls //
@@ -189,7 +210,7 @@ extern(C) export {
 	}
 
 	ushort[][] getBreakableWalls(){
-		return infoHolder.breakableWalls;
+		return program.infoHolder.breakableWalls;
 	}
 
 }

@@ -6,7 +6,8 @@ import std.conv : to;
 ///////////////////////////
 // Load extern functions //
 ///////////////////////////
-extern(C) bool innit(string city);
+extern(C) bool innit(string city, string mainScript);
+extern(C) bool loadScript(string mainScript);
 extern(C) string getErrorMessage();
 extern(C) ushort[] getMapDimensions();
 extern(C) ushort[] getKaja();
@@ -31,10 +32,11 @@ static ushort[] mapDimensions;
 void main(){
 	// innicialize //
 	string mesto = readText("../test-scripts/map1.txt");
+	string mainScript = readText("../test-scripts/test-basics.txt");
 	write(mesto);
 
 	// catch errors
-	if (!innit(mesto)){
+	if (!innit(mesto,mainScript)){
 		writeln(getErrorMessage());
 		return;
 	}

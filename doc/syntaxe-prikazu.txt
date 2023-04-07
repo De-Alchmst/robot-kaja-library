@@ -1,0 +1,75 @@
+Skript začíná jeho názvem. Oddělujícím prvkem je \n. Whitespace je ignorován.
+
+povely:
+Povely jsou jednoduché instrukce které říkají Kájovy co dělat. Také lze volat názvy dalších načtených scriptů
+	VLEVO_VBOK   - Kája se náhodně otočí o 90°, 100 gradů, či PI/2 radiánů vlevo.
+	KROK         - Kája se vydá na nebezpečnou cestu o jedno políčko před něj.
+	POLOŽ        - Navzdory státnímu zákazu Kája zvýší počet igelitových pytlíků pod ním o jedna.
+	ZVEDNI       - Kája dá na rady ekologických fanatiků ze Švédska a sebere jeden igelitový pytlík.
+	POSTAV       - Kája jakožto správný dělník postaví zeď pochybné kvality.
+	ZBOŘ         - Kája se pokusí na protest proti režimu zbořit zeď, avšak narozdíl od soudruha Bořka Bořitele je schopen svrhnout jen zdi nekvalitní.
+	PŘESTĚHUJ_SE - Kája po dlouhém papírování prodá svůj pozemek a přestěhujese na svou současnou pozici.
+	PŘASTAŇ      - Kája přehodnotí svá životní rozhodnutí a ukončí své trápení dle japonské tradice sudoku.
+
+výroky:
+Výroky umožnňují větší kontrolu nad Kájou, či ušetřit řádky kódu.
+	KONEC  - Ukončuje ostatní výroky.
+	KDYŽ   - Udělá následující kód pouze tehdy, pokud platí podmínka.
+	JINAK  - Možno použít namísto KONEC za KDYŽ. Kód v JINAK proběhne, poud podmínka v KDYŽ nepltí.
+	DOKUD  - Opakuje kód dokud neplatí daná podmínka.
+	OPAKUJ - Zopakuje kód vícekrát dle daného čísla.
+
+podmínky:
+Podmínky se užívají ve výrocích k vyhodnocení situace. Je jejich pravdivost otočit pomocí '!'.
+	ZEĎ     - Pravda, pokud je na políčku před Kájou zeď.
+	ZNAČKA  - Pravda, pokud Kája stojí alespoň na jedné značce.
+	SEVER   - Pravda, pokud je Kája otočen nahoru.
+	DOMOV   - Pravda, pokud je na políčku pod Kájou domov.
+	KVALITA - Pravda, pokud je zeď před Kájou kvalitní.
+
+ukázkové příklady:
+
+Dostane Káju ke zdi před ním.
+	KE_ZDI
+	
+	DOKUD !ZEĎ
+		KROK
+	KONEC
+
+Otočí Káju do prava.
+	VPRAVO_VBOK
+	
+	OPAKUJ 3
+		VLEVO_VBOK
+	KONEC
+
+Otočí Káju na sever.
+	NA_SEVER
+	
+	DOKUD !SEVER
+		VLEVO_VBOK
+	KONEC
+
+Projde lajnu zdí před Kájou od shora dolů a pokud narazí na zničitelnou zeď, tak ji zničí.
+	DĚROVAČKA
+	
+	SEVER
+	VPRAVO_VBOK
+	
+	KDYŽ ZEĎ
+		KDYŽ !KVALITA
+			ZBOŘ
+		KONEC
+	KONEC
+	VPRAVO_VBOK
+	
+	DOKUD !ZEĎ
+		KROK
+		VLEVE_VBOK
+		KDYŽ ZEĎ
+			KDYŽ !KVALITA
+				ZBOŘ
+			KONEC
+		KONEC
+		VPRAVO_VBOK
+	KONEC

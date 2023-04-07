@@ -16,26 +16,54 @@ int checkCollision(ushort[] positionToLookFor, ushort[][] stuffToLookIn){
 ////////////////////////////////////////////
 // splits city into lines for map loading //
 ////////////////////////////////////////////
-extern(C) string[][] splitCity(string city){
+string[][] splitCity(string city){
 	// get LF line ends
 	// using strip to get rid of extra whitespace
 
 	// get chunks separated by \r\n
 	string[] chunks = strip(city).split(regex("\r\n"));
-	string LFstring = strip(chunks[0]);
+	string LFstring = chunks[0];
 
 	// put them back together but with \n only
 	for (ushort i = 1; i < chunks.length; i++) // start from 1 to ignore first chunk alredy assigned
-		LFstring ~= "\n"~strip(chunks[i]);
+		LFstring ~= "\n"~chunks[i];
 
 	// return split by \n and , char
 	string[][] rows = [];
 	chunks = LFstring.split(regex("\n"));
 
 	for (ushort i = 0; i < chunks.length; i++)
-		rows ~= chunks[i].split(regex(","));
+		rows ~= strip(chunks[i]).split(regex(","));
 
 	return rows;
+}
+
+///////////////////////////////////////////////////////
+// splits sctipr by lines and gets rid of whitespace //
+///////////////////////////////////////////////////////
+string[] splitScript(string newScript){
+	string[] splitedScript;
+
+	// split by \r\n
+	string[] chunks = strip(newScript).split(regex("\r\n"));
+	string LFstring = chunks[0];
+
+	// put them back together but with \n only
+	for (uint i = 1; i < chunks.length; i++) // start from 1 to ignore first chunk alredy assigned
+		LFstring ~= "\n"~chunks[i];
+
+	// split by \n
+	string[] rows = LFstring.split(regex("\n"));
+
+	for (uint i = 0; i < rows.length; i++){
+		string row  = strip(rows[i]);
+		if (row != "")
+			splitedScript ~= row;
+	}
+
+	// return
+	return splitedScript;
+
 }
 
 ///////////////////////////////////////////////////
