@@ -8,7 +8,8 @@ import std.conv : to;
 ///////////////////////////
 extern(C) bool innit(string city, string mainScript);
 extern(C) bool loadScript(string mainScript);
-extern(C) string getErrorMessage();
+extern(C) bool doSomething();
+extern(C) string getStatusMessage();
 extern(C) ushort[] getMapDimensions();
 extern(C) ushort[] getKaja();
 extern(C) ushort[] getHome();
@@ -37,7 +38,7 @@ void main(){
 
 	// catch errors
 	if (!innit(mesto,mainScript)){
-		writeln(getErrorMessage());
+		writeln(getStatusMessage());
 		return;
 	}
 
@@ -46,7 +47,7 @@ void main(){
 	// test functions
 	int[] x = getMapDimensionsIntPtr()[0..2].dup;
 	writeln(x, to!(int[])(mapDimensions), mapDimensions);
-	getErrorMessage();
+	getStatusMessage();
 	getMapDimensions();
   getKaja();
 	getHome();
@@ -55,8 +56,16 @@ void main(){
 	getBreakableWalls();
 	writeln("functions loaded succesfully");
 
-	// write current state
+	// vypsat status
 	showMap();
+	// běžet dokud se program neukončí
+	while (doSomething()){
+		// write current state
+		writeln();
+		showMap();
+	}
+	// write ehy exit
+	writeln(getStatusMessage());
 
 }
 

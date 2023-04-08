@@ -20,7 +20,7 @@ internal class Program {
 
 		// catch erors //
 		if (!Innit(City)){
-			Console.WriteLine(GetErrorMessage());
+			Console.WriteLine(GetStatusMessage());
 			return;
 		}
 		
@@ -29,7 +29,7 @@ internal class Program {
 		Console.WriteLine(MapDimensions[1].ToString());
 
 		// test functions
-		GetErrorMessage();
+		GetStatusMessage();
 		GetMapDimensions();
 		GetKaja();
 		GetHome();

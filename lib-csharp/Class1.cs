@@ -11,7 +11,7 @@ public class RobotKaja
 [DllImport("../lib-d/kajaLibD.so")]
 static extern bool innitPtr(IntPtr city);
 [DllImport("../lib-d/kajaLibD.so")]
-static extern IntPtr getErrorMessagePtr();
+static extern IntPtr getStatusMessagePtr();
 [DllImport("../lib-d/kajaLibD.so")]
 static extern IntPtr getMapDimensionsIntPtr();
 [DllImport("../lib-d/kajaLibD.so")]
@@ -49,8 +49,8 @@ static extern IntPtr getNextBreakableWallIntPtr();
 ///////////////////////////////////////
 
 	// Get error message //
-	static public string GetErrorMessage(){
-		return Marshal.PtrToStringUTF8(getErrorMessagePtr()); // convert to string
+	static public string GetStatusMessage(){
+		return Marshal.PtrToStringUTF8(getStatusMessagePtr()); // convert to string
 	}
 
 	// get map dimensions

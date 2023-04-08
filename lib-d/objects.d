@@ -1,4 +1,5 @@
 public import support;
+import std.stdio;
 
 //////////////////
 // Kájovo class // and holds error massages
@@ -14,7 +15,7 @@ class RobotKaja {
 	// '-3-' //
 
 	// variables declared automatically when needed
-	string errorMessage;
+	string statusMessage;
 
 	// other
 	ushort[] returnInfo() => pos~direction;
@@ -35,7 +36,7 @@ class RobotKaja {
 					// go back
 					pos[1]++;
 					// generate error message
-					errorMessage = generateErrorMessage("walk into wall", direction);
+					statusMessage = generateErrorMessage("walk into wall", direction);
 					// return error status
 					return false;
 				}
@@ -51,7 +52,7 @@ class RobotKaja {
 					// go back
 					pos[0]--;
 					// generate error message
-					errorMessage = generateErrorMessage("walk into wall", direction);
+					statusMessage = generateErrorMessage("walk into wall", direction);
 					// return error status
 					return false;
 				}
@@ -67,7 +68,7 @@ class RobotKaja {
 					// go back
 					pos[1]--;
 					// generate error message
-					errorMessage = generateErrorMessage("walk into wall", direction);
+					statusMessage = generateErrorMessage("walk into wall", direction);
 					// return error status
 					return false;
 				}
@@ -83,7 +84,7 @@ class RobotKaja {
 					// go back
 					pos[0]++;
 					// generate error message
-					errorMessage = generateErrorMessage("walk into wall", direction);
+					statusMessage = generateErrorMessage("walk into wall", direction);
 					// return error status
 					return false;
 				}
@@ -125,7 +126,7 @@ struct InformationHolder{
 
 struct Script{
 	string[] commands;
-	uint currentCommandIndex = 0;
+	uint commandIndex = 0;
 }
 
 class Program{
@@ -136,10 +137,10 @@ class Program{
 	Script[string] scriptList;
 
 	// list of currently running scripts
-	Script[] runningScripts;
+	Script[] runningScripts; // last one is active
 
 	this(){
-		// set variables
+		// set variables //
 		infoHolder.solidWalls = [];
 		infoHolder.breakableWalls = [];
 		infoHolder.flags = [];
@@ -158,4 +159,61 @@ class Program{
 		runningScripts ~= addedScript;
 	}
 
+	// going through actions and making them or some shit //
+	bool nextAction(){
+		// if there is no more scripts
+		if (runningScripts.length == 0){
+			// return end of script
+			kaja.statusMessage = "konec scriptu";
+			return false;
+		}
+
+		Script scr = runningScripts[scriptList.length-1];
+		bool outcome;
+
+		// go þrough all possible commands
+		// and execute the right one
+		switch (scr.commands[scr.commandIndex]){
+			// move foward
+			case "KROK":
+				outcome = kaja.moveFoward(infoHolder.walls);
+				break;
+
+			// turn left and only left (for eternity if in infinite while loop or recursion)
+			case "VLEVO_VBOK":
+				kaja.turnLeft();
+				outcome = true;
+				break;
+
+
+			// if it doesent match, throw some error
+			default:
+				kaja.statusMessage = scr.commands[scr.commandIndex] ~ " není srozumitelný příkaz!";
+				outcome = false;
+		}
+
+		// if all no errors
+		if (outcome){
+			// move to next command
+			// need to influence actual struct, not copy
+			runningScripts[scriptList.length-1].commandIndex++;
+			// if it reached end of script
+			if (runningScripts[scriptList.length-1].commandIndex == scr.commands.length)
+				// remove it from list
+				runningScripts = runningScripts[0..$-1];
+		}
+
+		// if all worked fine
+		return outcome;
+	}
+
+	// destructor just in case //
+	~this(){
+		kaja.destroy();
+		infoHolder.destroy();
+		foreach (Script scr; runningScripts)
+			scr.destroy();
+		foreach (Script scr; scriptList)
+			scr.destroy();
+	}
 }

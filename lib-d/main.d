@@ -49,7 +49,7 @@ extern(C) export {
 		for (ushort y = 0; y < citySplitted.length; y++){
 			// set error if not all rows are same
 			if (citySplitted[y].length != cityWidth){
-				program.kaja.errorMessage =
+				program.kaja.statusMessage =
 					"Mapa nemá konzistentní šířku. Prosím, zkonzultujte tento problém s vaším architektem.";
 				return false;
 			}
@@ -82,7 +82,7 @@ extern(C) export {
 					default:
 						// if not number, then it is invalit tile
 						if (!isNumeric(citySplitted[y][x])){
-							program.kaja.errorMessage = "Blok mapy "~citySplitted[y][x]~" na pozici X : "~to!string(x)~", Y : "
+							program.kaja.statusMessage = "Blok mapy "~citySplitted[y][x]~" na pozici X : "~to!string(x)~", Y : "
 									~to!string(y)~" není validní. Prosím, zkonzultujte tento problém s vaším architektem.";
 							return false;
 						}
@@ -112,7 +112,7 @@ extern(C) export {
 
 		// test if for errors
 		if (splitedScript.length == 0){
-			program.kaja.errorMessage = "script is empty";
+			program.kaja.statusMessage = "script is empty";
 			return false;
 		}
 		// here will be something to check if commands are valid
@@ -125,17 +125,20 @@ extern(C) export {
 	}
 
 	// Do one action //
+	bool doSomething(){
+		return program.nextAction();
+	}
 
 ///////////////////////////////////////
 // Functions for getting information //
 ///////////////////////////////////////
 
 	// Get error message //
-	char* getErrorMessagePtr(){
-		return cast(char*)toStringz(getErrorMessage());
+	char* getStatusMessagePtr(){
+		return cast(char*)toStringz(getStatusMessage());
 	}
-	string getErrorMessage(){
-		return program.kaja.errorMessage;
+	string getStatusMessage(){
+		return program.kaja.statusMessage;
 	}
 
 	// get map dimensions //
