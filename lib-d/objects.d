@@ -104,6 +104,55 @@ class RobotKaja {
 			direction = 4;
 	}
 
+	// Highers number of flags under Kája, if any.//
+	public bool placeFlag(ref ushort[][] flags, ushort[] home){
+		// if at home, ERROR
+		if (home[0] == pos[0] && pos[1] == home[1]){
+			statusMessage = generateErrorMessage("placing flags at home",direction);
+			return false;
+		}
+
+		// else go through flags
+		for (uint i = 0; i < flags.length; i++)
+			// if match
+			if (flags[i][0] == pos[0] && flags[i][1] == pos[1]){
+				// add one
+				flags[i][2]++;
+				// and stop looping
+				return true;
+			}
+
+		// if no matches, create a new one
+		flags ~= [pos[0],pos[1],1];
+		return true;
+
+	}
+
+	// Lowers number of flags under Kája, if any //
+	public bool pickUpFlag(ref ushort[][] flags){
+		// go through flags
+		for (uint i = 0; i < flags.length; i++)
+			// if match
+			if (flags[i][0] == pos[0] && flags[i][1] == pos[1]){
+				// if multiple flags, remove one
+				if (flags[i][2] > 1)
+					flags[i][2]--;
+				// else just delete from list
+				else
+					if (flags.length-1 == i)
+						flags = flags[0..$-1];
+					else
+						flags = flags[0..i] ~ flags[i+1..$];
+
+				// and stop forlooping
+				return true;
+			}
+	
+		// if no match, then return error
+		statusMessage = generateErrorMessage("no flags", direction);
+		return false;
+	}
+
 }
 
 ////////////////////////
@@ -183,6 +232,13 @@ class Program{
 			case "VLEVO_VBOK":
 				kaja.turnLeft();
 				outcome = true;
+				break;
+
+			case "POLOŽ":
+				outcome = kaja.placeFlag(infoHolder.flags,infoHolder.home);
+				break;
+			case "ZVEDNI":
+				outcome = kaja.pickUpFlag(infoHolder.flags);
 				break;
 
 

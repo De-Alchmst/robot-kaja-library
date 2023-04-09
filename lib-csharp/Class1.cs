@@ -9,7 +9,11 @@ public class RobotKaja
 // Load extern functions //
 ///////////////////////////
 [DllImport("../lib-d/kajaLibD.so")]
-static extern bool innitPtr(IntPtr city);
+static extern bool innitPtr(IntPtr city, IntPtr mainScript);
+[DllImport("../lib-d/kajaLibD.so")]
+static extern bool loadScriptPtr(IntPtr mainScript);
+[DllImport("../lib-d/kajaLibD.so")]
+static extern bool doSomething();
 [DllImport("../lib-d/kajaLibD.so")]
 static extern IntPtr getStatusMessagePtr();
 [DllImport("../lib-d/kajaLibD.so")]
@@ -36,13 +40,19 @@ static extern IntPtr getNextBreakableWallIntPtr();
 ///////////////////////////////
 
 	// Innit / Restart //
-	static public bool Innit(string city){
-		return innitPtr(Marshal.StringToHGlobalAnsi(city)); // convert string to char*
+	static public bool Innit(string city, string MainScript){
+		return innitPtr(Marshal.StringToHGlobalAnsi(city), Marshal.StringToHGlobalAnsi(MainScript));// convert string to char*
 	}
 
 	// Load programs //
+	static public bool LoadScript(string NewScript){
+		return loadScriptPtr(Marshal.StringToHGlobalAnsi(NewScript));
+	}
 
 	// Do one action //
+	static public bool DoSomething(){
+		return doSomething();
+	}
 
 ///////////////////////////////////////
 // Functions for getting impormation //

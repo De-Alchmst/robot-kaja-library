@@ -2,12 +2,13 @@
 import std.file : readText;
 import std.stdio : write, writeln;
 import std.conv : to;
+import core.thread : Thread, msecs;
 
 ///////////////////////////
 // Load extern functions //
 ///////////////////////////
 extern(C) bool innit(string city, string mainScript);
-extern(C) bool loadScript(string mainScript);
+extern(C) bool loadScript(string newScript);
 extern(C) bool doSomething();
 extern(C) string getStatusMessage();
 extern(C) ushort[] getMapDimensions();
@@ -56,14 +57,15 @@ void main(){
 	getBreakableWalls();
 	writeln("functions loaded succesfully");
 
-	// vypsat status
-	showMap();
-	// běžet dokud se program neukončí
-	while (doSomething()){
+	// run until end of script
+	do {
 		// write current state
 		writeln();
 		showMap();
-	}
+		// sleep for a while
+		Thread.sleep(msecs(270));
+
+	} while (doSomething());
 	// write ehy exit
 	writeln(getStatusMessage());
 

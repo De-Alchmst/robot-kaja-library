@@ -76,15 +76,40 @@ string generateErrorMessage(string cause, byte directionOfKaja){
 			switch (directionOfKaja){
 				case 1:
 					return "Kája vešel do zdi... a to není dobře.";
-					break;
 				case 2:
-					return "Procházení zdmi ještě nebylo implementováno";
-					break;
+					return "Procházení zdmi ještě nebylo implementováno.";
 				case 3:
 					return "Hleď, nechť Kája vrazil do zdi.";
-					break;
 				default:
 					return "Navedl jsi Káju do zdi. Ty vrahu!";
+			}
+			break;
+
+		// lack of flags
+		case "no flags":
+			switch (directionOfKaja){
+				case 1:
+					return "Ať kája hledá jak chce, žádné značky tu nejsou.";
+				case 2:
+					return "Na zemi žádný bordel není, a to je kupodivu špatně.";
+				case 3:
+					return "Kde nic není, ani Smrt nebere.";
+				default:
+					return "Kája se pokusil sebrat vzduch. Nepovedlo se.";
+			}
+			break;
+
+		// trying to place flag at home
+		case "placing flags at home":
+			switch (directionOfKaja){
+				case 1:
+					return "Dělání bordelu v domě je vyloženě zakázáno!";
+				case 2:
+					return "Kája vložil značku do ledničky. Teď z toho má depresi.";
+				case 3:
+					return "V položení značky na podlahu Kájovi brání kvetoucí kaktus. Jaká to škoda.";
+				default:
+					return "Kája znečisťuje jen ulice, né svůj pokoj. Buď jako Kája a ukliď si pokoj.";
 			}
 			break;
 

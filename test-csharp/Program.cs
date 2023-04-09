@@ -1,5 +1,6 @@
 ﻿using static Kaja.RobotKaja;
 using System;
+using System.Threading;
 
 namespace KajaTest;
 internal class Program {
@@ -16,10 +17,11 @@ internal class Program {
 	static void Main(string[] args){
 		// innicialize //
 		string City = File.ReadAllText(@"../test-scripts/map1.txt");
+		string MainScript = File.ReadAllText(@"../test-scripts/test-basics.txt");
 		Console.Write(City);
 
 		// catch erors //
-		if (!Innit(City)){
+		if (!Innit(City, MainScript)){
 			Console.WriteLine(GetStatusMessage());
 			return;
 		}
@@ -40,8 +42,16 @@ internal class Program {
 		Console.WriteLine("Functions Loaded Succesfully!!");
 
 
+		// run until end of script
 		// write current state
-		ShowMap();
+		do {
+			Console.WriteLine();
+			ShowMap();
+			// sleep for a while
+			Thread.Sleep(270);
+		} while (DoSomething());
+		// write why exit
+		Console.WriteLine(GetStatusMessage());
 
 	}
 

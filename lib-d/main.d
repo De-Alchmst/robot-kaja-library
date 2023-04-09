@@ -107,6 +107,8 @@ extern(C) export {
 	}
 
 	// Load programs //
+	bool loadScriptPtr(char* newScript)
+		{ return loadScript( to!string(fromStringz(newScript)) ); }
 	bool loadScript(string newScript){
 		string[] splitedScript = splitScript(newScript);
 
