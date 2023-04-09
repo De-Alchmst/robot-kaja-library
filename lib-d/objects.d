@@ -107,7 +107,7 @@ class RobotKaja {
 	// Highers number of flags under Kája, if any.//
 	public bool placeFlag(ref ushort[][] flags, ushort[] home){
 		// if at home, ERROR
-		if (home[0] == pos[0] && pos[1] == home[1]){
+		if (home == pos){
 			statusMessage = generateErrorMessage("placing flags at home",direction);
 			return false;
 		}
@@ -153,6 +153,26 @@ class RobotKaja {
 		return false;
 	}
 
+	// Changes Kájas home //
+	public bool changeHome(ushort[][] flags, ref ushort[] home){
+		// checks there isn't home alredy
+		if (home == pos){
+			statusMessage = generateErrorMessage("moved to home",direction);
+			return false;
+		}
+		// go through flags
+		for (uint i = 0; i < flags.length; i++)
+			// if match
+			if (flags[i][0] == pos[0] && flags[i][1] == pos[1]){
+				statusMessage = generateErrorMessage("flag in way of home",direction);
+				return false;
+			}
+
+		// if there isn't anything in way
+		home = pos.dup;
+		return true;
+
+	}
 }
 
 ////////////////////////
@@ -227,20 +247,30 @@ class Program{
 			case "KROK":
 				outcome = kaja.moveFoward(infoHolder.walls);
 				break;
-
 			// turn left and only left (for eternity if in infinite while loop or recursion)
 			case "VLEVO_VBOK":
 				kaja.turnLeft();
 				outcome = true;
 				break;
 
+			// place flag
 			case "POLOŽ":
 				outcome = kaja.placeFlag(infoHolder.flags,infoHolder.home);
 				break;
+			// pick up flag
 			case "ZVEDNI":
 				outcome = kaja.pickUpFlag(infoHolder.flags);
 				break;
 
+			// change home
+			case "PŘESTĚHUJ_SE":
+				outcome = kaja.changeHome(infoHolder.flags,infoHolder.home);
+				break;
+
+			// called end
+			case "PŘESTAŇ":
+				kaja.statusMessage = "povel PŘESTAŇ";
+				return false;
 
 			// if it doesent match, throw some error
 			default:

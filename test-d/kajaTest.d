@@ -63,7 +63,7 @@ void main(){
 		writeln();
 		showMap();
 		// sleep for a while
-		Thread.sleep(msecs(270));
+		Thread.sleep(msecs(200));
 
 	} while (doSomething());
 	// write ehy exit

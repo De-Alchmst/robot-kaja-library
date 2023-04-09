@@ -48,7 +48,7 @@ internal class Program {
 			Console.WriteLine();
 			ShowMap();
 			// sleep for a while
-			Thread.Sleep(270);
+			Thread.Sleep(200);
 		} while (DoSomething());
 		// write why exit
 		Console.WriteLine(GetStatusMessage());

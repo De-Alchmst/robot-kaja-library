@@ -113,6 +113,34 @@ string generateErrorMessage(string cause, byte directionOfKaja){
 			}
 			break;
 
+		// moved home to place where it alredy is
+		case "moved to home":
+			switch (directionOfKaja){
+				case 1:
+					return "Když si Kája uvědomil zbytečnost této akce, tak dostal infarkt.";
+				case 2:
+					return "Kája se pokusil prodat dům sám sobě, ale selhal.";
+				case 3:
+					return "Toto je vskutku zapeklitá situace, kterou však nepovoluji.";
+				default:
+					return "Dům se zde již nachízí, takže ukončuji program. Vrať se až implementuješ KDYŽ.";
+			}
+			break;
+
+		// moved to place with flag
+		case "flag in way of home":
+			switch (directionOfKaja){
+				case 1:
+					return "ve výstavbě domu překáží nějaká skládka.";
+				case 2:
+					return "Na Káju je tu až moc velký binec.";
+				case 3:
+					return "Výhružně stojící značka odmítá prodat svůj pozemek.";
+				default:
+					return "Zdá se, že je obtížné vykreslovat jak značky, tak domy na stejném místě.";
+			}
+			break;
+
 		// if you write error cause wrong
 		default:
 			return
