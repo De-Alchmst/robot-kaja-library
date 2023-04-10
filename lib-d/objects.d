@@ -275,6 +275,15 @@ struct Script{
 	uint commandIndex = 0;
 }
 
+struct Statement{
+	string type;
+	uint origin; // DOKUD and OPAKUJ
+
+	string condition; // DOKUD and KDYŽ
+	ubyte loopCount; // OPAKUJ
+	uint endsInside; // KDYŽ
+}
+
 class Program{
 	RobotKaja kaja;
 	InformationHolder infoHolder;
@@ -284,6 +293,9 @@ class Program{
 
 	// list of currently running scripts
 	Script[] runningScripts; // last one is active
+
+	// list of running statements that need to be ended
+	Statement[] statements;
 
 	this(){
 		// set variables //
@@ -314,8 +326,9 @@ class Program{
 			return false;
 		}
 
-		Script scr = runningScripts[scriptList.length-1];
+		Script scr = runningScripts[$-1];
 		bool outcome;
+		bool wasThisStatement = false;
 
 		// go þrough all possible commands
 		// and execute the right one
@@ -359,24 +372,98 @@ class Program{
 				kaja.statusMessage = "povel PŘESTAŇ";
 				return false;
 
-			// if it doesent match, throw some error
+			// if it doesent match
 			default:
-				kaja.statusMessage = scr.commands[scr.commandIndex] ~ " není srozumitelný příkaz!";
-				outcome = false;
+				// look if it isn't statement
+				// split into words
+				string[] lineParts = scr.commands[scr.commandIndex].split(regex(" "));
+				// compare
+				wasThisStatement = true;
+				switch (lineParts[0]){
+
+					// repeat a numbre of times
+					case "OPAKUJ":
+						outcome = handleRepeat(lineParts);
+						break;
+
+					// end of statement
+					case "KONEC":
+						outcome = handleEndOfStatement();
+						break;
+
+					// if not statement, throw some error
+					default:
+						kaja.statusMessage = scr.commands[scr.commandIndex] ~ " není srozumitelný příkaz!";
+						outcome = false;
+				}
 		}
 
 		// if all no errors
 		if (outcome){
 			// move to next command
 			// need to influence actual struct, not copy
-			runningScripts[scriptList.length-1].commandIndex++;
+			runningScripts[$-1].commandIndex++;
 			// if it reached end of script
-			if (runningScripts[scriptList.length-1].commandIndex == scr.commands.length)
+			if (runningScripts[$-1].commandIndex == scr.commands.length)
 				// remove it from list
 				runningScripts = runningScripts[0..$-1];
+			
+			// if it was a statement, run one more loop
+			if (wasThisStatement)
+				outcome = nextAction();
 		}
 
 		// if all worked fine
+		return outcome;
+	}
+
+	// handles OPAKUJ inicialization
+	bool handleRepeat(string[] lineParts){
+		// test whether parametr is number
+		if (!lineParts[1].isNumeric){
+			// if not, return error
+			kaja.statusMessage = cast(string)lineParts[1] ~ " není validní číslo! Kája je zmaten.";
+			return false;
+		}
+
+		// if it is, add Statement
+		Statement s = {
+			type:"OPAKUJ", origin:runningScripts[$-1].commandIndex, loopCount:to!ubyte(lineParts[1])};
+		statements ~= s;
+		return true;
+
+	}
+
+	bool handleEndOfStatement(){
+		// check if there are any statements
+		if (statements.length == 0){
+			// if there are, throw error
+			kaja.statusMessage = "Není tu co ukončit, tak ukončuji program.";
+			return false;
+		}
+
+		// get what to end
+		bool outcome;
+		final switch (statements[$-1].type){
+
+			// repeat
+			case "OPAKUJ":
+				outcome = true;
+				// if there is not supposed to be any more repeats
+				if (statements[$-1].loopCount == 1){
+					// relese it from its suffering
+					statements = statements[0..$-1];
+				}
+				// if there is more to do
+				else {
+					// just loop back to origin
+					runningScripts[$-1].commandIndex = statements[$-1].origin;
+					// and check one loop out
+					statements[$-1].loopCount--;
+				}
+				break;
+		}
+
 		return outcome;
 	}
 

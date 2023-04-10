@@ -1,4 +1,4 @@
-import std.regex : split, regex;
+public import std.regex : split, regex;
 public import std.string : toStringz, fromStringz, strip, StringException, isNumeric;
 
 ////////////////////////////////////////////////////////////////////
@@ -202,7 +202,7 @@ string generateErrorMessage(string cause, byte directionOfKaja){
 		case "break at nothing":
 			switch (directionOfKaja){
 				case 1:
-					return "Ať Kája hledá jak chce, zeď zde nenachází.";
+					return "Ať Kája hledá jak chce, zeď se zde nenachází.";
 				case 2:
 					return "Kája zmaten absencí zdi usíná.";
 				case 3:
