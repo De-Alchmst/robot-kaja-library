@@ -7,7 +7,8 @@ public import std.string : toStringz, fromStringz, strip, StringException, isNum
 // returns index of said item or -1 if no found
 int checkCollision(ushort[] positionToLookFor, ushort[][] stuffToLookIn){
 	for (int i = 0; i < stuffToLookIn.length; i++)
-		if (stuffToLookIn[i][0] == positionToLookFor[0] && stuffToLookIn[i][1] == positionToLookFor[0])
+		// not stuffToLookIn[i] == positionToLookFor, so it can work with falgs and stuff
+		if (stuffToLookIn[i][0] == positionToLookFor[0] && stuffToLookIn[i][1] == positionToLookFor[1])
 			return i;
 
 	return -1;
@@ -141,10 +142,80 @@ string generateErrorMessage(string cause, byte directionOfKaja){
 			}
 			break;
 
+		// attempt to build wall at other wall or out of bounds
+		case "build at wall":
+			switch (directionOfKaja){
+				case 1:
+					return "Zdi bohužel mohou dosahovat pouze omezené výšky.";
+				case 2:
+					return "Vypadá to, že se zde již jedna zeď nachází. Běž si stavět jinam!";
+				case 3:
+					return "Kája se pokusil nacpat dvě zdi do sebe. Nějak se mu přitom podařilo stvořit černou díru a zničit svět.";
+				default:
+					return "Hleď! Nechť zeď tu již stojí.";
+			}
+			break;
+
+		// attempt to build wall at flag
+		case "build at flag":
+			switch (directionOfKaja){
+				case 1:
+					return "Kája se pokusil postavit zeď na značce, ale nepovedlo se mu to.";
+				case 2:
+					return "Bohužel se kvůli přílišnému bordelu na zemi nepodařilo Kájovi získat stavební povolení.";
+				case 3:
+					return "Ač by zeď na značce dozajista vypadala esteticky, tato verze Kájy tuto možnost nepodporuje.";
+				default:
+					return "Práce v nečistém prostředí je zakázána!";
+			}
+			break;
+
+		// attempt to build in home
+		case "build in home":
+			switch (directionOfKaja){
+				case 1:
+					return "Zdá se, že tento dům již obsahuje dostatek zdí.";
+				case 2:
+					return "Kája postavil zeď v domě. Teď se nemá jak dostat ven.";
+				case 3:
+					return "Kája zazdil ledničku. Teď má hlad.";
+				default:
+					return "Zeď je sice moc hezká věc, ale do garsonky se zrovna nehodí.";
+			}
+			break;
+
+		// try breaking unbreakable wall
+		case "break solid wall":
+			switch (directionOfKaja){
+				case 1:
+					return "Kája se pokusil zničit zeď, ale byla na jeho paličku až moc kvalitní. Teď nemá jak paličku, tak sebevědomí.";
+				case 2:
+					return "Kája se pokusil zničit zeď, ale zeď zničila jeho.";
+				case 3:
+					return "Kája chytře rozpoznal, že tato zeď není k ničení vhodná.";
+				default:
+					return "Kája nasprejoval na zeď urážlivé grafiti. Byl zabit twiterovým sniperem.";
+			}
+			break;
+
+		// try breaking nothing
+		case "break at nothing":
+			switch (directionOfKaja){
+				case 1:
+					return "Ať Kája hledá jak chce, zeď zde nenachází.";
+				case 2:
+					return "Kája zmaten absencí zdi usíná.";
+				case 3:
+					return "Kája vyhloubil díru. Teď se z ní nemůže dostat.";
+				default:
+					return "Kája se pokusil zbořit zeď, ale namísto toho zbořil stabilitu tohoto programu.";
+			}
+			break;
+
 		// if you write error cause wrong
 		default:
 			return
-				"Developer wrote cause of error wrong, so I can't provide any useful information about your demise."
-				~ " Please report this incident to your local developer.";
+				"Zdá se, že vývojář špatně napsal příčinu selhání, takže nemohu poskytnout žádné užitečné informace"
+				~ " oledně zkázy vašeho programu. Prosím nahlašte tento překlep vašemu lokálnímu poskytovately Kájy.";
 	}
 }

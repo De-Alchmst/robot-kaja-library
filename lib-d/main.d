@@ -3,12 +3,7 @@
 //              dmd -c main.d -fPIC
 //              dmd -shared main.o objects.o support.o -ofkajaLibD.so
 
-import std.string;
 import objects;
-
-import std.conv : to;
-
-import std.stdio;
 
 //////////////////////
 // Set up Variables //

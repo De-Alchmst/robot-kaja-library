@@ -1,5 +1,7 @@
 public import support;
-import std.stdio;
+
+public import std.stdio;
+public import std.conv : to;
 
 //////////////////
 // Kájovo class // and holds error massages
@@ -22,8 +24,6 @@ class RobotKaja {
 
 	// moves foward //
 	public bool moveFoward(ushort[][] walls){
-		static int collisionIndex;
-		
 		// decide direction
 		switch(direction){
 			case 1: //up
@@ -31,8 +31,7 @@ class RobotKaja {
 				pos[1]--;
 
 				// check for collisions
-				collisionIndex = checkCollision(pos,walls);
-				if (pos[1] == 0 || collisionIndex >= 0){
+				if (pos[1] == -1 || checkCollision(pos,walls) >= 0){
 					// go back
 					pos[1]++;
 					// generate error message
@@ -47,8 +46,7 @@ class RobotKaja {
 				pos[0]++;
 
 				// check for collisions
-				collisionIndex = checkCollision(pos,walls);
-				if (pos[0] == wallPosition[0] || collisionIndex >= 0){
+				if (pos[0] == wallPosition[0] || checkCollision(pos,walls) >= 0){
 					// go back
 					pos[0]--;
 					// generate error message
@@ -63,9 +61,8 @@ class RobotKaja {
 				pos[1]++;
 
 				// check for collisions
-				collisionIndex = checkCollision(pos,walls);
-				if (pos[1] == wallPosition[1] || collisionIndex >= 0){
-					// go back
+				if (pos[1] == wallPosition[1] || checkCollision(pos,walls) >= 0){
+					// go backj
 					pos[1]--;
 					// generate error message
 					statusMessage = generateErrorMessage("walk into wall", direction);
@@ -79,8 +76,7 @@ class RobotKaja {
 				pos[0]--;
 
 				// check for collisions
-				collisionIndex = checkCollision(pos,walls);
-				if (pos[0] == 0 || collisionIndex >= 0){
+				if (pos[0] == -1 || checkCollision(pos,walls) >= 0){
 					// go back
 					pos[0]++;
 					// generate error message
@@ -173,6 +169,87 @@ class RobotKaja {
 		return true;
 
 	}
+
+	// gets place before Kája //
+	private ushort[] getDestination(){
+		switch (direction){
+			case 1:
+				return to!(ushort[])([pos[0],pos[1]-1]);
+			case 2:
+				return to!(ushort[])([pos[0]+1,pos[1]]);
+			case 3:
+				return to!(ushort[])([pos[0],pos[1]+1]);
+			default:
+				return to!(ushort[])([pos[0]-1,pos[1]]);
+		}
+	}
+
+	// builds breakable wall //
+	public bool buildAWall(ref ushort[][] breakableWalls, ushort[][] walls, ushort[][] flags, ushort[] home){
+		// get destination
+		ushort[] destination = getDestination();
+
+		// determin if it is even valid position
+		if ( destination[0] == -1 || destination[1] == -1
+				|| destination[0] == wallPosition[0] ||  destination[1] == wallPosition[1]){
+			statusMessage = generateErrorMessage("build at wall",direction);	
+			return false;
+		}
+		// check for home
+		if (home == destination){
+			statusMessage = generateErrorMessage("build in home",direction);
+			return false;
+		}
+		// check for walls
+		if (checkCollision(destination,walls) != -1){ // it returns -1 of no match
+			statusMessage = generateErrorMessage("build at wall",direction);	
+			return false;
+		}
+		// check for flags
+		if (checkCollision(destination,flags) != -1){
+			statusMessage = generateErrorMessage("build at flag",direction);	
+			return false;
+		}
+
+		// now that it is sure that place is free, add the wall
+		breakableWalls ~= destination;
+		return true;
+	}
+
+	// breaks breakable wall //
+	public bool breakAWall(ref ushort[][] breakableWalls, ushort[][] solidWalls){
+		// get destination 
+		ushort[] destination = getDestination();
+
+		// determin if it is even valid position
+		if ( destination[0] == -1 || destination[1] == -1
+				|| destination[0] == wallPosition[0] ||  destination[1] == wallPosition[1]){
+			statusMessage = generateErrorMessage("break solid wall",direction);	
+			return false;
+		}
+
+		// determine if there is solid wall
+		// I want it to have special error message
+		if (checkCollision(destination,solidWalls) >= 0){
+			statusMessage = generateErrorMessage("break solid wall",direction);	
+			return false;
+		}
+
+		// look for breakable wall
+		int wallIndex = checkCollision(destination,breakableWalls);
+		// if no found
+		if (wallIndex == -1){
+			statusMessage = generateErrorMessage("break at nothing",direction);
+			return false;
+		}
+		// if match, get rid of it
+		if (wallIndex == breakableWalls.length-1)
+			breakableWalls = breakableWalls[0..$-1];
+		else
+			breakableWalls = breakableWalls[0..wallIndex] ~ breakableWalls[wallIndex+1..$];
+		return true;
+	}
+
 }
 
 ////////////////////////
@@ -265,6 +342,16 @@ class Program{
 			// change home
 			case "PŘESTĚHUJ_SE":
 				outcome = kaja.changeHome(infoHolder.flags,infoHolder.home);
+				break;
+
+			// build a wall
+			case "POSTAV":
+				outcome = kaja.buildAWall(
+						infoHolder.breakableWalls, infoHolder.walls, infoHolder.flags, infoHolder.home);
+				break;
+			// break a wall
+			case "ZBOŘ":
+				outcome = kaja.breakAWall(infoHolder.breakableWalls, infoHolder.solidWalls);
 				break;
 
 			// called end
