@@ -328,11 +328,13 @@ class Program{
 
 		Script scr = runningScripts[$-1];
 		bool outcome;
-		bool wasThisStatement = false;
+		bool recurse = false;
+		bool addLineToRunningScripts = false;
 
 		// go þrough all possible commands
 		// and execute the right one
-		switch (scr.commands[scr.commandIndex]){
+		string line = scr.commands[scr.commandIndex];
+		switch (line){
 			// move foward
 			case "KROK":
 				outcome = kaja.moveFoward(infoHolder.walls);
@@ -374,11 +376,21 @@ class Program{
 
 			// if it doesent match
 			default:
+				// anything here is not something, to show to the player so go right to the next loop
+				recurse = true;
+
+				// looks if it isn't another script
+				if ((line in scriptList) !is null){
+					// if it is, add it 
+					addLineToRunningScripts = true;
+					outcome = true;
+					break;
+				}
+
 				// look if it isn't statement
 				// split into words
-				string[] lineParts = scr.commands[scr.commandIndex].split(regex(" "));
+				string[] lineParts = line.split(regex(" "));
 				// compare
-				wasThisStatement = true;
 				switch (lineParts[0]){
 
 					// repeat a numbre of times
@@ -393,7 +405,7 @@ class Program{
 
 					// if not statement, throw some error
 					default:
-						kaja.statusMessage = scr.commands[scr.commandIndex] ~ " není srozumitelný příkaz!";
+						kaja.statusMessage = line ~ " není srozumitelný příkaz!";
 						outcome = false;
 				}
 		}
@@ -408,8 +420,11 @@ class Program{
 				// remove it from list
 				runningScripts = runningScripts[0..$-1];
 			
+			// if set to add new script
+			if (addLineToRunningScripts)
+				addToRunningScripts(line);
 			// if it was a statement, run one more loop
-			if (wasThisStatement)
+			if (recurse)
 				outcome = nextAction();
 		}
 

@@ -18,6 +18,7 @@ internal class Program {
 		// innicialize //
 		string City = File.ReadAllText(@"../test-scripts/map1.txt");
 		string MainScript = File.ReadAllText(@"../test-scripts/test-basics.txt");
+		string Vpravo = File.ReadAllText(@"../test-scripts/vpravo.txt");
 		Console.Write(City);
 
 		// catch erors //
@@ -25,6 +26,9 @@ internal class Program {
 			Console.WriteLine(GetStatusMessage());
 			return;
 		}
+
+		// load another script
+		LoadScript(Vpravo);
 		
 		MapDimensions = GetMapDimensions();
 		Console.WriteLine(MapDimensions[0].ToString());

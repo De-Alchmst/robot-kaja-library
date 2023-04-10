@@ -35,6 +35,7 @@ void main(){
 	// innicialize //
 	string mesto = readText("../test-scripts/map1.txt");
 	string mainScript = readText("../test-scripts/test-basics.txt");
+	string vpravo = readText("../test-scripts/vpravo.txt");
 	write(mesto);
 
 	// catch errors
@@ -42,6 +43,9 @@ void main(){
 		writeln(getStatusMessage());
 		return;
 	}
+
+	// load additional script
+	loadScript(vpravo);
 
 	mapDimensions = getMapDimensions();
 

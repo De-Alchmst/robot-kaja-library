@@ -92,7 +92,7 @@ extern(C) export {
 			// add to running scripts
 			string[] splitedScript = splitScript(mainScript); // get all lines again
 
-			// add the script ro runningScripts
+			// add the script ro runningScripts using given key (first line)
 			program.addToRunningScripts(splitedScript[0]);
 		}
 		// else return error
