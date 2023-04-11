@@ -380,7 +380,7 @@ class Program{
 
 				// looks if it isn't another script
 				if ((line in scriptList) !is null){
-					// if it is, add it 
+					// if it is, add it
 					addLineToRunningScripts = true;
 					outcome = true;
 					break;
@@ -397,8 +397,19 @@ class Program{
 						outcome = handleRepeat(lineParts);
 						break;
 
+					// repeat until condition
 					case "DOKUD":
 						outcome = handleUntil(lineParts);
+						break;
+
+					// do if condition
+					case "KDYŽ":
+						outcome = handleIf(lineParts);
+						break;
+
+					// possible else after KDYŽ
+					case "JINAK":
+						outcome = handleElse();
 						break;
 
 					// end of statement
@@ -433,6 +444,43 @@ class Program{
 
 		// if all worked fine
 		return outcome;
+	}
+
+	// handles JINAK inicialization //
+	bool handleElse(){
+		// if previous statement is KDYŽ
+		if (statements[$-1].type == "KDYŽ"){
+			// change it to JINAK
+			return skipBlockOfCode("JINAK");
+		}
+		// else if it is something else
+		// return error
+		kaja.statusMessage = "Tohle JINAK vypadá, jakoby sem nepatřilo.";
+		return false;
+	}
+
+	// handles KDYŽ inicialization //
+	bool handleIf(string[] lineParts){
+		// test for corret ammount of parts
+		if (lineParts.length != 2){
+			kaja.statusMessage = "KDYŽ nedostalo správný počet parametrů.";
+			return false;
+		}
+
+		// test for validity of condition
+		if (!validateCondition(lineParts[1]))
+			return false;
+
+		// if valid and true, then add statement
+		if (handleCondition(lineParts[1])){
+			Statement s = {type:"KDYŽ"};
+			statements ~= s;
+			return true;
+
+		// else skip entire block
+		} else {
+			return skipBlockOfCode("KDYŽ");
+		}
 	}
 
 	// handles DOKUD inicialization //
@@ -530,6 +578,12 @@ class Program{
 					statements = statements[0..$-1];
 
 				break;
+
+			// if
+			case "KDYŽ", "JINAK":
+				// relese it
+				statements = statements[0..$-1];
+				break;
 		}
 
 		return true;
@@ -614,12 +668,17 @@ class Program{
 	bool skipBlockOfCode(string cause){
 		static string[] validStatements = ["KDYŽ","DOKUD","OPAKUJ"];
 		// whether to stop at JINAK
-		bool catchJINAK = (cause == "KDYŽ" || cause == "JINAK");
 		ubyte innerLoops = 0;
 		// go through code
 		while (true){
 			// add index
 			runningScripts[$-1].commandIndex++;
+			// if too far
+			if (runningScripts[$-1].commandIndex == runningScripts[$-1].commands.length){
+				// throw error
+				kaja.statusMessage = "Vypadá to, že tu jaksi chybí KONEC.";
+				return false;
+			}
 			// get line
 			string line = runningScripts[$-1].commands[runningScripts[$-1].commandIndex];
 			// split into words
@@ -650,10 +709,11 @@ class Program{
 			// if JINAK
 			else if (line == "JINAK")
 				// if in KDYŽ and no inner loops
-				if (innerLoops ==0 && catchJINAK){
-					// add KDYŽ so it can catch its KONEC succesfully
-					Statement s= {type:"KDYŽ"};
+				if (innerLoops == 0 && cause == "KDYŽ"){
+					// add JINAK statement
+					Statement s= {type:"JINAK"};
 					statements ~= s;
+					break;
 				}
 
 			
