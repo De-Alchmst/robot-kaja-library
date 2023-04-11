@@ -25,7 +25,7 @@ Podmínky se užívají ve výrocích k vyhodnocení situace. Je jejich pravdivo
 	ZNAČKA  - Pravda, pokud Kája stojí alespoň na jedné značce.
 	SEVER   - Pravda, pokud je Kája otočen nahoru.
 	DOMOV   - Pravda, pokud je na políčku pod Kájou domov.
-	KVALITA - Pravda, pokud je zeď před Kájou kvalitní.
+	KVALITA - Pravda, pokud je před Kájou kvalitní zeď.
 
 ukázkové příklady:
 

@@ -1,4 +1,4 @@
-// build with : dmd kajaTest.d -L../lib-d/kajaLibD.so
+// build with : dmd kajaTest.d -L../lib-d/kajaLibD.so -ofKaja.exe
 import std.file : readText;
 import std.stdio : write, writeln;
 import std.conv : to;

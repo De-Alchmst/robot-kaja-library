@@ -279,9 +279,8 @@ struct Statement{
 	string type;
 	uint origin; // DOKUD and OPAKUJ
 
-	string condition; // DOKUD and KDYŽ
+	string condition; // DOKUD
 	ubyte loopCount; // OPAKUJ
-	uint endsInside; // KDYŽ
 }
 
 class Program{
@@ -398,6 +397,10 @@ class Program{
 						outcome = handleRepeat(lineParts);
 						break;
 
+					case "DOKUD":
+						outcome = handleUntil(lineParts);
+						break;
+
 					// end of statement
 					case "KONEC":
 						outcome = handleEndOfStatement();
@@ -432,8 +435,39 @@ class Program{
 		return outcome;
 	}
 
-	// handles OPAKUJ inicialization
+	// handles DOKUD inicialization //
+	bool handleUntil(string[] lineParts){
+		// test for corret ammount of parts
+		if (lineParts.length != 2){
+			kaja.statusMessage = "DOKUD nedostalo správný počet parametrů.";
+			return false;
+		}
+
+		// test for validity of condition
+		if (!validateCondition(lineParts[1]))
+			return false;
+
+		// if valid and true, then add statement
+		if (handleCondition(lineParts[1])){
+			Statement s = {type:"DOKUD", condition:lineParts[1], origin:runningScripts[$-1].commandIndex};
+			statements ~= s;
+			return true;
+
+		// else skip entire block
+		} else {
+			return skipBlockOfCode("DOKUD");
+		}
+
+	}
+
+	// handles OPAKUJ inicialization //
 	bool handleRepeat(string[] lineParts){
+		// test for corret ammount of parts
+		if (lineParts.length != 2){
+			kaja.statusMessage = "OPAKUJ nedostalo správný počet parametrů.";
+			return false;
+		}
+			
 		// test whether parametr is number
 		if (!lineParts[1].isNumeric){
 			// if not, return error
@@ -441,14 +475,21 @@ class Program{
 			return false;
 		}
 
+		ubyte loopCount = to!ubyte(lineParts[1]);
+		// test number of loops
+		if (loopCount <= 0){
+			kaja.statusMessage = "Počet průběhů v OPAKUJ musí být větší než 0!";
+			return false;
+		}
+
 		// if it is, add Statement
-		Statement s = {
-			type:"OPAKUJ", origin:runningScripts[$-1].commandIndex, loopCount:to!ubyte(lineParts[1])};
+		Statement s = {type:"OPAKUJ", origin:runningScripts[$-1].commandIndex, loopCount:loopCount};
 		statements ~= s;
 		return true;
 
 	}
 
+	// handles KONEC and JINAK
 	bool handleEndOfStatement(){
 		// check if there are any statements
 		if (statements.length == 0){
@@ -458,12 +499,10 @@ class Program{
 		}
 
 		// get what to end
-		bool outcome;
 		final switch (statements[$-1].type){
 
 			// repeat
 			case "OPAKUJ":
-				outcome = true;
 				// if there is not supposed to be any more repeats
 				if (statements[$-1].loopCount == 1){
 					// relese it from its suffering
@@ -477,9 +516,149 @@ class Program{
 					statements[$-1].loopCount--;
 				}
 				break;
+
+			// until
+			case "DOKUD":
+				// if condition is still true
+				if (handleCondition(statements[$-1].condition))
+					// loop back to origin
+					runningScripts[$-1].commandIndex = statements[$-1].origin;
+
+				// if it is false
+				else
+					// don't repeat and get rid of it
+					statements = statements[0..$-1];
+
+				break;
 		}
 
-		return outcome;
+		return true;
+	}
+
+	// validates condition //
+	bool validateCondition(string condition){
+		static string[] validConditions = ["ZEĎ","ZNAČKA","SEVER","DOMOV","KVALITA"];
+
+		// get rid of potentional '!'
+		if (condition[0] == '!' && condition.length > 1)
+			condition = condition[1..$];
+
+		// test for validity
+		foreach (string x; validConditions)
+			if (condition == x)
+				return true;
+		// if no match
+		kaja.statusMessage = condition ~ " není validní podmínkou.";
+		return false;
+	}
+	
+	// returns boolean of condition //
+	bool handleCondition(string condition){
+		bool outcome;
+		// note potentional negaiton
+		bool negated = false;
+		if (condition[0] == '!' && condition.length > 1){
+			condition = condition[1..$];
+			negated = true;
+		}
+
+		// get value of condition
+		final switch (condition){
+			// is there wall before Kája
+			case "ZEĎ":
+				if (checkCollision(kaja.getDestination(),infoHolder.walls) == -1)
+					outcome = false;
+				else
+					outcome = true;
+				break;
+
+			// is there flag under Kája
+			case "ZNAČKA":
+				if (checkCollision(kaja.pos,infoHolder.flags) == -1)
+					outcome = false;
+				else
+					outcome = true;
+				break;
+
+			// is Kája rotated ta North
+			case "SEVER":
+				if (kaja.direction == 1)
+					outcome = true;
+				else
+					outcome = false;
+				break;
+
+			// is Kája home
+			case "DOMOV":
+				if (kaja.pos == infoHolder.home)
+					outcome = true;
+				else
+					outcome = false;
+				break;
+
+			case "KVALITA":
+				if (checkCollision(kaja.getDestination(),infoHolder.solidWalls) == -1)
+					outcome = false;
+				else
+					outcome = true;
+		}
+
+		// return
+		if (negated)
+			return !outcome;
+		else
+			return outcome; 
+	}
+
+	// skips block of code
+	bool skipBlockOfCode(string cause){
+		static string[] validStatements = ["KDYŽ","DOKUD","OPAKUJ"];
+		// whether to stop at JINAK
+		bool catchJINAK = (cause == "KDYŽ" || cause == "JINAK");
+		ubyte innerLoops = 0;
+		// go through code
+		while (true){
+			// add index
+			runningScripts[$-1].commandIndex++;
+			// get line
+			string line = runningScripts[$-1].commands[runningScripts[$-1].commandIndex];
+			// split into words
+			string[] lineParts = line.split(regex(" "));
+
+			// look what it is
+			// if statement
+			bool isStatement = false;
+			foreach (string s; validStatements)
+				if (lineParts[0] == s){
+					isStatement = true;
+					break;
+				}
+			if (isStatement)
+				// add innre loop that needs to be completed
+				innerLoops++;
+
+			// if KONEC
+			else if (line == "KONEC")
+				// if some inner loop
+				if (innerLoops != 0)
+					// end it
+					innerLoops--;
+				// else end self
+				else
+					break;
+
+			// if JINAK
+			else if (line == "JINAK")
+				// if in KDYŽ and no inner loops
+				if (innerLoops ==0 && catchJINAK){
+					// add KDYŽ so it can catch its KONEC succesfully
+					Statement s= {type:"KDYŽ"};
+					statements ~= s;
+				}
+
+			
+		}
+		return true;
 	}
 
 	// destructor just in case //
