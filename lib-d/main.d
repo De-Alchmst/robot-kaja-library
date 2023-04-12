@@ -191,7 +191,7 @@ extern(C) export {
 		return cast(int*)to!(int[])(getMapDimensions());
 	}
 	ushort[] getMapDimensions(){
-		return program.kaja.wallPosition;
+		return program.kaja.wallPosition.dup;
 	}
 
 	// Get Kája //
@@ -207,7 +207,7 @@ extern(C) export {
 		return cast(int*)to!(int[])(getHome());
 	}
 	ushort[] getHome(){
-		return program.infoHolder.home;
+		return program.infoHolder.home.dup;
 	}
 
 	// Get flags //
@@ -224,7 +224,7 @@ extern(C) export {
 	}
 
 	ushort[][] getFlags(){
-		return program.infoHolder.flags;
+		return program.infoHolder.flags.dup;
 	}
 
 	// Get solid walls //
@@ -239,7 +239,7 @@ extern(C) export {
 	}
 
 	ushort[][] getSolidWalls(){
-		return program.infoHolder.solidWalls;
+		return program.infoHolder.solidWalls.dup;
 	}
 
 	// Get breakable walls //
@@ -254,7 +254,128 @@ extern(C) export {
 	}
 
 	ushort[][] getBreakableWalls(){
-		return program.infoHolder.breakableWalls;
+		return program.infoHolder.breakableWalls.dup;
+	}
+
+	// places or breaks solid wall //
+	void changeSolidWall(ushort x, ushort y){
+		ushort[] pos = [x,y];
+		int checkInd;
+		// if in solidWalls
+		checkInd = checkCollision(pos,program.infoHolder.solidWalls);
+		if (checkInd != -1){
+			// destroy it
+			program.infoHolder.solidWalls = program.infoHolder.solidWalls[0..checkInd]
+				~ program.infoHolder.solidWalls[checkInd+1..$];
+			// and return
+			return;
+		}
+
+		// else check if it isn't occupied
+		if (pos == program.infoHolder.home)
+			return;
+		if (pos == program.kaja.pos)
+			return;
+		checkInd = checkCollision(pos,program.infoHolder.breakableWalls);
+		if (checkInd != -1)
+			return;
+		checkInd = checkCollision(pos,program.infoHolder.flags);
+		if (checkInd != -1)
+			return;
+
+		// add it
+		program.infoHolder.solidWalls ~= pos;
+	}
+
+	// places or breaks breakable wall //
+	void changeBreakableWall(ushort x, ushort y){
+		ushort[] pos = [x,y];
+		int checkInd;
+		// if in breakableWalls
+		checkInd = checkCollision(pos,program.infoHolder.breakableWalls);
+		if (checkInd != -1){
+			// destroy it
+			program.infoHolder.breakableWalls = program.infoHolder.breakableWalls[0..checkInd]
+				~ program.infoHolder.breakableWalls[checkInd+1..$];
+			// and return
+			return;
+		}
+
+		// else check if it isn't occupied
+		if (pos == program.infoHolder.home)
+			return;
+		if (pos == program.kaja.pos)
+			return;
+		checkInd = checkCollision(pos,program.infoHolder.solidWalls);
+		if (checkInd != -1)
+			return;
+		checkInd = checkCollision(pos,program.infoHolder.flags);
+		if (checkInd != -1)
+			return;
+
+		// add it
+		program.infoHolder.breakableWalls ~= pos;
+	}
+
+	// relocates home //
+	void relocateHome(ushort x, ushort y){
+		ushort[] pos = [x,y];
+		int checkInd;
+
+		// check for walls and flags
+		checkInd = checkCollision(pos,program.infoHolder.solidWalls);
+		if (checkInd != -1)
+			return;
+		checkInd = checkCollision(pos,program.infoHolder.breakableWalls);
+		if (checkInd != -1)
+			return;
+		checkInd = checkCollision(pos,program.infoHolder.flags);
+		if (checkInd != -1)
+			return;
+
+		// relocate
+		program.infoHolder.home = pos;
+	}
+
+	// adds a flag //
+	void addFlag(ushort x, ushort y){
+		ushort[] pos = [x,y];
+		int checkInd;
+		// if in flags
+		checkInd = checkCollision(pos,program.infoHolder.flags);
+		if (checkInd != -1){
+			// add one
+			program.infoHolder.flags[checkInd][2]++;
+			return;
+		}
+
+		// else check if it isn't occupied
+		if (pos == program.infoHolder.home)
+			return;
+		checkInd = checkCollision(pos,program.infoHolder.solidWalls);
+		if (checkInd != -1)
+			return;
+		checkInd = checkCollision(pos,program.infoHolder.breakableWalls);
+		if (checkInd != -1)
+			return;
+
+		// add it
+		program.infoHolder.flags ~= pos ~ 1;
+	}
+
+	// substracts flag //
+	void substractFlag(ushort x, ushort y){
+		// if in flags
+		int checkInd = checkCollision([x,y],program.infoHolder.flags);
+		if (checkInd != -1){
+			// remove one
+			program.infoHolder.flags[checkInd][2]--;
+			// if it was last flag
+			if (program.infoHolder.flags[checkInd][2] == 0)
+				// remove it
+				program.infoHolder.flags = program.infoHolder.flags[0..checkInd]
+					~ program.infoHolder.flags[checkInd+1..$];
+		}
 	}
 
 }

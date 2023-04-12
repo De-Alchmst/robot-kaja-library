@@ -1,0 +1,49 @@
+Všechny funkce připravěné jsou v lib-csharp/Kaja.cs ve classe RobotKaja. Fungují stejně, ale berou a dávají int namísto ushort a jsou psány v Pascal case.
+
+Většina funkcí vrací bool. při úspěšném proběhnutí vrátí true, při chybě false. V takovém případu je nutno získat status a oznámit uživateli co se stalu. false, může teké značit konec scriptu, či PŘESTAŇ povel.
+
+funkce jsou:
+	bool innit(string city, string mainscript)
+		Tato funkce inicializuje nový program a přemaže vše z potencionálního předešlého. city je mapa města s Kájou a mainScrpit je script, který se přehraje.
+
+	bool loadScript(string newScript)
+		Načte další script do programu, aby ho pak bylo možno volat.
+
+	bool doSomething()
+		Posune scriptem o jednu Kájovu akci kupředu. Na konci vrací teké false, ale se statusem "konec scriptu", či "povel PŘESTAŇ". Díky tomu se dá hezky vložit jako podmínla do do .. while loopu.
+
+	string getStatusMessage()
+		tato funkce navrátí aktuální status. Užitečné pro zjištění příčiny chyby, či konce.
+
+	ushort[] getMapDimensions()
+		Navrátí rozměry mapy X a Y.
+
+	ushort[] getKaja()
+		Navrátí reprezentaci Kájy. X, Y a Otočení; kde 1 == SEVER, 2 == VÝCHOD, 3 = JIH A 4 = ZÁPAD.
+
+	ushort[] getHome()
+		navrátí pozici X, Y domova.
+		
+	ushort[][] getFlags()
+		Navrátí list reprezentací značek X,Y,počet.
+
+	ushort[][] getSolidWalls()
+		Navrátí list pozic X, Y všech kvalitních zdí.
+
+	ushort[][] getBreakableWalls()
+		Navrátí list pozic X, Y všech nekvalitních zdí zdí.
+
+	void changeSolidWalls(ushort x, ushort y)
+		Přidá, či odebere kvalitní zeď na danou pozici. Neudělá nic, pokud je něco v cestě.
+
+	void changeBreakableWalls(ushort x, ushort y)
+		Přidá, či odebere nekvalitní zeď na danou pozici. Neudělá nic, pokud je něco v cestě.
+
+	void relocatesHome(ushort x, ushort y)
+		Pokud nic nestojí v cestě, tak přesune domov na danou pozici.
+
+	void addFlag(ushort x, ushort y)
+		Pokud nic nestojí v cestě, přidá jednu značku na danou pozici.
+
+	void substractFlag(ushort x, ushort y)
+		Pokud je na pozici značka, jednu odebere.

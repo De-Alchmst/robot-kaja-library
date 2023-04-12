@@ -31,20 +31,6 @@ internal class Program {
 		LoadScript(Vpravo);
 		
 		MapDimensions = GetMapDimensions();
-		Console.WriteLine(MapDimensions[0].ToString());
-		Console.WriteLine(MapDimensions[1].ToString());
-
-		// test functions
-		GetStatusMessage();
-		GetMapDimensions();
-		GetKaja();
-		GetHome();
-		GetFlags();
-		GetSolidWalls();
-		GetBreakableWalls();
-
-		Console.WriteLine("Functions Loaded Succesfully!!");
-
 
 		// run until end of script
 		// write current state

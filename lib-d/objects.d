@@ -135,10 +135,7 @@ class RobotKaja {
 					flags[i][2]--;
 				// else just delete from list
 				else
-					if (flags.length-1 == i)
-						flags = flags[0..$-1];
-					else
-						flags = flags[0..i] ~ flags[i+1..$];
+					flags = flags[0..i] ~ flags[i+1..$];
 
 				// and stop forlooping
 				return true;
@@ -243,10 +240,7 @@ class RobotKaja {
 			return false;
 		}
 		// if match, get rid of it
-		if (wallIndex == breakableWalls.length-1)
-			breakableWalls = breakableWalls[0..$-1];
-		else
-			breakableWalls = breakableWalls[0..wallIndex] ~ breakableWalls[wallIndex+1..$];
+		breakableWalls = breakableWalls[0..wallIndex] ~ breakableWalls[wallIndex+1..$];
 		return true;
 	}
 

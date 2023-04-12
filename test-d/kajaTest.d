@@ -17,8 +17,11 @@ extern(C) ushort[] getHome();
 extern(C) ushort[][] getFlags();
 extern(C) ushort[][] getSolidWalls();
 extern(C) ushort[][] getBreakableWalls();
-
-extern(C) int* getMapDimensionsIntPtr();
+extern(C) void changeSolidWall(ushort x,ushort y);
+extern(C) void changeBreakableWall(ushort x,ushort y);
+extern(C) void relocateHome(ushort x,ushort y);
+extern(C) void addFlag(ushort x,ushort y);
+extern(C) void substractFlag(ushort x,ushort y);
 
 ////////////////////////
 // Set some variables //
@@ -49,18 +52,6 @@ void main(){
 
 	mapDimensions = getMapDimensions();
 
-	// test functions
-	int[] x = getMapDimensionsIntPtr()[0..2].dup;
-	writeln(x, to!(int[])(mapDimensions), mapDimensions);
-	getStatusMessage();
-	getMapDimensions();
-  getKaja();
-	getHome();
-	getFlags();
-	getSolidWalls();
-	getBreakableWalls();
-	writeln("functions loaded succesfully");
-
 	// run until end of script
 	do {
 		// write current state
@@ -68,9 +59,8 @@ void main(){
 		showMap();
 		// sleep for a while
 		Thread.sleep(msecs(200));
-
 	} while (doSomething());
-	// write ehy exit
+	// write why exit
 	writeln(getStatusMessage());
 
 }

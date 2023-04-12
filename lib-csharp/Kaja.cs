@@ -34,6 +34,16 @@ static extern IntPtr getNextSolidWallIntPtr();
 static extern void getBreakableWallsLength(out int lengthOfArray);
 [DllImport("../lib-d/kajaLibD.so")]
 static extern IntPtr getNextBreakableWallIntPtr();
+[DllImport("../lib-d/kajaLibD.so")]
+static extern void changeSolidWall(ushort x, ushort y);
+[DllImport("../lib-d/kajaLibD.so")]
+static extern void changeBreakableWall(ushort x, ushort y);
+[DllImport("../lib-d/kajaLibD.so")]
+static extern void relocateHome(ushort x, ushort y);
+[DllImport("../lib-d/kajaLibD.so")]
+static extern void addFlag(ushort x, ushort y);
+[DllImport("../lib-d/kajaLibD.so")]
+static extern void substractFlag(ushort x, ushort y);
 
 ///////////////////////////////
 // Functions for interaction //
@@ -145,6 +155,31 @@ static extern IntPtr getNextBreakableWallIntPtr();
 		}
 
 		return Output;
+	}
+
+	// places or breaks solid wall //
+	static public void ChangeSolidWall(int x, int y){
+		changeSolidWall((ushort)x,(ushort)y);
+	}
+
+	// places or breaks breakable wall //
+	public static void ChangeBreakableWall(int x, int y){
+		changeBreakableWall((ushort)x,(ushort)y);
+	}
+
+	// relocates home //
+	public static void RelocateHome(int x, int y){
+		relocateHome((ushort)x,(ushort)y);
+	}
+
+	// adds a flag //
+	public static void AddFlag(int x, int y){
+		addFlag((ushort)x,(ushort)y);
+	}
+
+	// substracts flag //
+	public static void SubstractFlag(int x, int y){
+		substractFlag((ushort)x,(ushort)y);
 	}
 
 }
