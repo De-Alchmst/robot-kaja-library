@@ -21,6 +21,41 @@ static ushort solidWallIndex;
 static int[][] storedBreakableWalls;
 static ushort breakableWallIndex;
 
+////////////////////////
+// loads data to Kája // RobotKaja is not in support
+////////////////////////
+bool loadKaja(RobotKaja kaja, string[] data){
+	// check data validity
+	if (data.length != 3 || !data[0].isNumeric || !data[1].isNumeric){
+		return false;
+		kaja.statusMessage = "Neplatná hlavička mapy.";
+	}
+
+	// load pos
+	kaja.pos = to!(ushort[])(data[0..2]);
+
+	// load direction
+	switch (data[2]){
+		case "SEVER":
+			kaja.direction = 1;
+			break;
+		case "VÝCHOD":
+			kaja.direction = 2;
+			break;
+		case "JIH":
+			kaja.direction = 3;
+			break;
+		case "ZÁPAD":
+			kaja.direction = 4;
+			break;
+		default:
+			kaja.statusMessage = "Neplatná světová strana.";
+			return false;
+	}
+
+	return true;
+}
+
 extern(C) export {
 ///////////////////////////////
 // Functions for interaction //
@@ -35,6 +70,20 @@ extern(C) export {
 
 		// split map
 		string[][] citySplitted = splitCity(city);
+
+		// test if there is map
+		if (citySplitted.length <= 1){
+			program.kaja.statusMessage = "Jaksi mi chybí mapa"; 
+			return false;
+		}
+
+		// load Kája from map
+		if (!loadKaja(program.kaja,citySplitted[0]))
+			return false;
+
+		// crop of line with Kája
+		citySplitted = citySplitted[1..$];
+
 		ushort cityWidth = cast(ushort)citySplitted[0].length;
 
 		// set kája.wallPos
@@ -67,11 +116,6 @@ extern(C) export {
 					// home
 					case "H":
 						program.infoHolder.home = [x,y];
-						break;
-					// kája
-					case "K1","K2","K3","K4":
-						program.kaja.pos = [x,y];
-						program.kaja.direction = to!byte(citySplitted[y][x][1..2]);
 						break;
 					// flag
 					default:

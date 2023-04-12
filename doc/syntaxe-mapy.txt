@@ -1,17 +1,18 @@
 Mapa se zkládá z řádků oddělených \n. Každý z řádků obsahuje elementy odděleny ','. Všechny řádky musí být stejně dlouhé.
+První řádek jsou informace o Kájovy: X,Y,světová strana, na kterou je otočen (SEVER,VÝCHOD,JIH,ZÁPAD)
 
 elementy:
 	W - zeď
 	B - nekvalitní zeď
 	H - domov
-	K{1,2,3,4} - Kája s daným směrem
 	libovolné číslo - značky
 	mezera - nic
 
 příklad:
 
+1,1,JIH
 W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W
-W,K2, , , ,W, , , , , , , , , ,W
+W, , , , ,W, , , , , , , , , ,W
 W, , , , ,W, ,5, , , , , , , ,W
 W, , , , ,W, , , , , , , , , ,W
 W, , , , ,B, , ,666, , , , , , ,W

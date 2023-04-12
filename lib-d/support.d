@@ -64,7 +64,6 @@ string[] splitScript(string newScript){
 
 	// return
 	return splitedScript;
-
 }
 
 ///////////////////////////////////////////////////
